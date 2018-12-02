@@ -1,0 +1,40 @@
+<idea-plugin>
+    <id>achdjian.plugin.ros</id>
+    <name>ROS plugin</name>
+    <vendor email="pachdjian@gmail.com" >Paolo Achdjian</vendor>
+
+    <description><![CDATA[
+    Develop a ROS application inside the IDE.
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+    <depends>com.intellij.modules.clion</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <directoryProjectGenerator
+                implementation="it.achdjian.plugin.ros.generator.RosNodeGenerator"/>
+        <applicationConfigurable order="last" id="ROS.plugin.achdjian.it"
+                             instance="it.achdjian.plugin.ros.settings.RosSettings"
+                             displayName="ROS config" groupId="build"/>
+
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+
+    <application-components>
+        <component>
+            <implementation-class>it.achdjian.plugin.ros.RosEnvironments</implementation-class>
+        </component>
+        <component>
+            <implementation-class>it.achdjian.plugin.ros.settings.RosSettings</implementation-class>
+        </component>
+    </application-components>
+</idea-plugin>
