@@ -4,8 +4,10 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.CMakeAbstractCPPProjectGenerator
 import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.settings.CMakeProjectSettings
+import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
 import it.achdjian.plagin.ros.ui.panel
 import it.achdjian.plugin.ros.RosEnvironments
 import it.achdjian.plugin.ros.settings.RosVersion
@@ -59,6 +61,23 @@ class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
     override fun getCMakeFileContent(p0: String): String {
         return "cmake_minimum_required(VERSION 2.8.3)\n"+
                 "add_subdirectory(src)\n"
+    }
+
+    override fun generateProject(project: Project, path: VirtualFile, cmakeSetting: CMakeProjectSettings, module: Module) {
+        super.generateProject(project, path, cmakeSetting, module)
+        val cMakeWorkspace = CMakeWorkspace.getInstance(project)
+        val settings = cMakeWorkspace.settings
+        var releaseProfile = CMakeSettings.Profile(
+                "Release",
+                "Release",
+                "",
+                "",
+                true,
+                version!!.env,
+                null,
+                null)
+
+        settings.profiles = listOf(releaseProfile)
     }
 
 }
