@@ -25,7 +25,16 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+        <group id="ROS.WelcomeScreen.Actions">
+            <!--<action id="ImportROSWorkspace" class="it.achdjian.plugin.ros.importer.ImporterRosWorkspaceAction" text="Import ROS workspace"/>-->
+            <action id="ImportROSWorkspace" class="it.achdjian.plugin.ros.importer.ImporterRosWorkspaceAction" text="Import ROS workspace"/>
+            <add-to-group group-id="WelcomeScreen.QuickStart" anchor="after" relative-to-action="ImportCMakeProject"/>
+        </group>
+
+        <group id="ROS.FileMenu.Before">
+            <action id="CPP.ImportROSWorkspace" class="it.achdjian.plugin.ros.importer.ImporterRosWorkspaceAction" text="Import ROS workspace ... "/>
+            <add-to-group group-id="FileOpenGroup" anchor="after" relative-to-action="CPP.ImportCMakeProject"/>
+        </group>
     </actions>
 
 
