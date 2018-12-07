@@ -9,41 +9,56 @@ import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.settings.CMakeProje
 import it.achdjian.plagin.ros.ui.panel
 import it.achdjian.plugin.ros.RosEnvironments
 import it.achdjian.plugin.ros.settings.RosVersion
+import it.achdjian.plugin.ros.ui.PackagesPanel
+import javax.swing.BoxLayout
 import javax.swing.JComponent
+import javax.swing.JPanel
+
 
 class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
 
-    private var version:RosVersion?=null
+    private var version: RosVersion? = null
+    private lateinit var packagesPanel: PackagesPanel
 
-    override fun getName(): String = "ROS workspace2"
+    override fun getName(): String = "ROS workspace"
 
     override fun getSettingsPanel(): JComponent {
         val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
         val versionsName = state.versions.map { it.name }
-        val p = panel("ROS versions") {
+
+        val panel = JPanel()
+        panel.layout =  BoxLayout(panel, BoxLayout.Y_AXIS)
+
+        packagesPanel = PackagesPanel()
+
+        val optionPanel = panel("ROS version") {
             row("ROS version") {
-                comboBox(versionsName){
-                    version = state.versions.find { version->version.name == it.item.toString()  }
+                comboBox(versionsName) {
+                    version = state.versions.find { version -> version.name == it.item.toString() }
+                    version?.let {
+                        it.searchPackages()
+                        packagesPanel.setPackages(it.packages)
+                    }
                 }
             }
         }
 
-        return p
+        panel.add(optionPanel)
+        panel.add(packagesPanel)
+
+        return panel
     }
 
     override fun createSourceFiles(projectName: String, path: VirtualFile): Array<VirtualFile> {
-        path.createChildDirectory(this,"src")
+        path.createChildDirectory(this, "src")
         version?.initWorkspace(path)
+        version?.createPackage(path,projectName,packagesPanel.selected())
         return arrayOf()
     }
 
-    override fun generateProject(project: Project, path: VirtualFile, cmakeSetting: CMakeProjectSettings, module: Module) {
-        path.createChildDirectory(this,"src")
-        version?.initWorkspace(path)
-    }
-
     override fun getCMakeFileContent(p0: String): String {
-       return "CMake version 12.3"
+        return "cmake_minimum_required(VERSION 2.8.3)\n"+
+                "add_subdirectory(src)\n"
     }
 
 }
