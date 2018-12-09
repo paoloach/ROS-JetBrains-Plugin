@@ -7,17 +7,7 @@ import com.intellij.openapi.components.Storage
 import it.achdjian.plugin.ros.settings.RosVersion
 import java.nio.file.Path
 
-@State(name = "ROS.environments", storages = [(Storage("ROSEnvironments.xml"))])
-data class RosEnvironments(var versions: MutableList<RosVersion> = ArrayList()) : PersistentStateComponent<RosEnvironments> {
-
-    override fun getState(): RosEnvironments {
-        return this
-    }
-
-    override fun loadState(state: RosEnvironments) {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-        versions = state.versions
-    }
+data class RosEnvironments(var versions: MutableList<RosVersion> = ArrayList()) {
 
     fun contains(rosVersion: RosVersion) = versions.contains(rosVersion)
 

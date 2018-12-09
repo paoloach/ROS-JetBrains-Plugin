@@ -30,11 +30,9 @@ import javax.swing.Icon
 
 
 class ImporterRosWorkspaceAction : AnAction(AllIcons.ToolbarDecorator.Import), DumbAware {
-
-    override fun actionPerformed(event: AnActionEvent?) {
+    override fun actionPerformed(event: AnActionEvent) {
         startWizard()
     }
-
 }
 
 class MyFileChooserDescriptor : FileChooserDescriptor(false, true, false, false, false, false) {

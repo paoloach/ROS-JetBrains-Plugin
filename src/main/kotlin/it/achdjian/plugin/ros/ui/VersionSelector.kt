@@ -2,14 +2,28 @@ package it.achdjian.plugin.ros.ui
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.ComboBox
-import com.jetbrains.python.configuration.PyActiveSdkConfigurable
+import it.achdjian.plugin.ros.RosEnvironments
+import java.awt.Component
 import java.awt.Graphics
+import javax.swing.*
+import javax.swing.border.EmptyBorder
 
 class VersionSelector : ComboBox<Any>() {
     companion object {
         const val TABLE_CELL_EDITOR="JComboBox.isTableCellEditor"
         const val SHOW_ALL = "ShowAll"
     }
+
+    init {
+        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        state.versions.forEach {
+            addItem(it.name)
+        }
+        addItem(VersionSelectorRenderer.SEPARATOR_STRING)
+        addItem(SHOW_ALL)
+        renderer = VersionSelectorRenderer()
+    }
+
     override fun setSelectedItem(item: Any) {
         if (item == SHOW_ALL) {
             ApplicationManager.getApplication().invokeLater {
@@ -17,19 +31,42 @@ class VersionSelector : ComboBox<Any>() {
                // allDialog.show()
             }
         } else {
-            if ("separator" != item) {
+            if (VersionSelectorRenderer.SEPARATOR_STRING != item) {
                 super.setSelectedItem(item)
             }
 
         }
     }
 
-    override fun paint(g: Graphics?) {
-        try {
-            putClientProperty(TABLE_CELL_EDITOR, false)
-            super.paint(g)
-        } finally {
-            putClientProperty(TABLE_CELL_EDITOR, true)
+}
+
+class VersionSelectorRenderer :  JLabel() , ListCellRenderer<Any?> {
+
+    companion object {
+        const val SEPARATOR_STRING="SEPARATOR"
+    }
+    private var separator = JSeparator(SwingConstants.HORIZONTAL)
+
+    init {
+        isOpaque=true
+        border = EmptyBorder(1,1,1,1)
+    }
+
+
+    override fun getListCellRendererComponent(list: JList<out Any?>?, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component {
+        val str= value?.toString()?:""
+        if (SEPARATOR_STRING == str) {
+            return separator
         }
+        if (isSelected) {
+            background = list?.selectionForeground
+            foreground = list?.selectionForeground
+        } else {
+            background = list?.background
+            foreground = list?.foreground
+        }
+        font = list?.font
+        text=str
+        return this
     }
 }

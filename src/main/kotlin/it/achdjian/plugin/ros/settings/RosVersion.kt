@@ -1,18 +1,21 @@
 package it.achdjian.plugin.ros.settings
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.xmlb.annotations.Transient
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 
 
-class RosVersion(val path: Path) {
-    val name = path.fileName.toString()
-    val env = diffEnvironment(path)
-    val envPath = splitPath(env)
-    val initWorkspaceCmd = findInitCmd(path)
-    val createPackage = createPackageFactory(this)
+data class RosVersion(var path: String, var name:String, var env: Map<String,String>, var envPath: List<String>, var initWorkspaceCmd: InitWorkspaceCmd?, var createPackage: CreatePackage) {
 
+    constructor(path: String) :
+            this(path,Paths.get(path).fileName.toString(),diffEnvironment(Paths.get(path)), emptyList(), findInitCmd(Paths.get(path)), NullCreatePackage()  ){
+        envPath = splitPath(env)
+        createPackage = createPackageFactory(this)
+
+    }
+
+    @Transient
     val packages: MutableList<String> = ArrayList()
 
     fun initWorkspace(projectPath: VirtualFile) {
@@ -43,19 +46,21 @@ class RosVersion(val path: Path) {
         packages.sortWith(PackagesComparator())
     }
 
-    private  fun splitPath(env: Map<String,String>):List<String> {
-        var path = env["PATH"]
+    companion object {
+        private fun splitPath(env: Map<String, String>): List<String> {
+            var path = env["PATH"]
 
-        if (path == null){
-            val actualEnv = System.getenv()
-            path = actualEnv["PATH"]
-        }
-        val splittedPath = ArrayList<String>()
-        path?.let {
-            splittedPath.addAll(it.split(":"))
-        }
+            if (path == null) {
+                val actualEnv = System.getenv()
+                path = actualEnv["PATH"]
+            }
+            val splittedPath = ArrayList<String>()
+            path?.let {
+                splittedPath.addAll(it.split(":"))
+            }
 
-        return splittedPath
+            return splittedPath
+        }
     }
 }
 

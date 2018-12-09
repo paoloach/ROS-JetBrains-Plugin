@@ -26,9 +26,9 @@ fun releaseProfile(version: RosVersion, baseDir: File) : CMakeSettings.Profile {
             "Release",
             "Release",
             "",
-            "",
+            options,
             true,
             version.env,
             buildDir,
-            options)
+            "")
 }
