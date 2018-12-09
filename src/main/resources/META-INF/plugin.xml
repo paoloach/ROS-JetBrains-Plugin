@@ -21,7 +21,7 @@
         <applicationConfigurable order="last" id="ROS.plugin.achdjian.it"
                              instance="it.achdjian.plugin.ros.settings.RosSettings"
                              displayName="ROS config" groupId="build"/>
-
+        <projectOpenProcessor id="gradle" implementation="it.achdjian.plugin.ros.importer.RosWorkspaceOpenProcessor"/>
     </extensions>
 
     <actions>

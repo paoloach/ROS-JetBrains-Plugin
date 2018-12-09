@@ -1,7 +1,6 @@
 package it.achdjian.plugin.ros.settings
 
 import com.intellij.openapi.vfs.VirtualFile
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths

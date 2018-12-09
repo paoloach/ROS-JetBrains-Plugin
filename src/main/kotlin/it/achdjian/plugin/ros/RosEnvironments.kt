@@ -5,9 +5,10 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import it.achdjian.plugin.ros.settings.RosVersion
+import java.nio.file.Path
 
 @State(name = "ROS.environments", storages = [(Storage("ROSEnvironments.xml"))])
-data class RosEnvironments(var versions: MutableList<RosVersion> =ArrayList())  : PersistentStateComponent<RosEnvironments> {
+data class RosEnvironments(var versions: MutableList<RosVersion> = ArrayList()) : PersistentStateComponent<RosEnvironments> {
 
     override fun getState(): RosEnvironments {
         return this
@@ -21,4 +22,6 @@ data class RosEnvironments(var versions: MutableList<RosVersion> =ArrayList())  
     fun contains(rosVersion: RosVersion) = versions.contains(rosVersion)
 
     fun add(rosVersion: RosVersion) = versions.add(rosVersion)
+
+    fun getOwnerVersion(path: Path) = versions.firstOrNull { path.startsWith(it.path) }
 }

@@ -39,6 +39,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.9.7'
     compileOnly files('/opt/clion/lib/clion.jar')
+    compileOnly files("/opt/clion/plugins/python/lib/python.jar")
 }
 
 
