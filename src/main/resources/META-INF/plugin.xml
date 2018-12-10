@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>achdjian.plugin.ros</id>
-    <name>ROS plugin</name>
+    <name>ROS-Robot Operating System</name>
     <vendor email="pachdjian@gmail.com" >Paolo Achdjian</vendor>
 
     <description><![CDATA[

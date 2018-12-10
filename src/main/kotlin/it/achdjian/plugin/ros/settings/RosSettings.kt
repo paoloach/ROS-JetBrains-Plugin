@@ -1,26 +1,31 @@
 package it.achdjian.plugin.ros.settings
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ApplicationComponent
+import com.intellij.openapi.components.BaseComponent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.FixedSizeButton
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ComboboxSpeedSearch
-import com.intellij.ui.IdeBorderFactory.createTitledBorder
 import com.intellij.ui.layout.LCFlags
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
 import it.achdjian.plugin.ros.RosEnvironments
 import it.achdjian.plugin.ros.ui.RosTablePackageModel
 import it.achdjian.plugin.ros.ui.VersionSelector
-import java.awt.*
+import java.awt.Dimension
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JScrollPane
 
 
 class ScanActionListener(private val panel: JPanel) : ActionListener {
@@ -46,7 +51,7 @@ class ScanActionListener(private val panel: JPanel) : ActionListener {
 
 }
 
-class SelectEnvironment(val versionSelector: VersionSelector, val model: RosTablePackageModel) : ActionListener {
+class SelectEnvironment(private val versionSelector: VersionSelector, val model: RosTablePackageModel) : ActionListener {
     companion object {
         private val LOG = Logger.getInstance(RosSettings::class.java)
     }
@@ -62,7 +67,7 @@ class SelectEnvironment(val versionSelector: VersionSelector, val model: RosTabl
     }
 }
 
-class RosSettings : ApplicationComponent, Configurable {
+class RosSettings : BaseComponent, Configurable {
     private var scanActionListener: ScanActionListener? = null
     private val model = RosTablePackageModel()
 
@@ -86,7 +91,7 @@ class RosSettings : ApplicationComponent, Configurable {
     }
 
     override fun createComponent(): JComponent {
-            val layout = GridBagLayout()
+        val layout = GridBagLayout()
         val mainPanel = JPanel(layout)
         val version = JLabel("ROS version")
         val emptyLabel = JLabel("  ")
@@ -100,6 +105,11 @@ class RosSettings : ApplicationComponent, Configurable {
         val detailsButton = FixedSizeButton()
         detailsButton.icon = IconLoader.findIcon("/icons/ros.svg")
         detailsButton.preferredSize = Dimension(preferredSize.height, preferredSize.height)
+        detailsButton.addActionListener{event->
+            val project = ProjectManager.getInstance().defaultProject
+            val dialog = it.achdjian.plugin.ros.ui.RosVersionDetailDialog(project)
+            dialog.show()
+        }
 
         val packageTable = JBTable(model)
 
