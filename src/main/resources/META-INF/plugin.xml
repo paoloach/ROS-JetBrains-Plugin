@@ -7,17 +7,11 @@
     <p> This plugin allow to develop ROS nodes inside the IDE without the need to start CLion from a command line.<p>
     <p> It makes available all the CLion programming facilities (code completion and so on ).<p>
     <p>You can to create a new workspace or import an existing one; the plugin will set CLion in order it use rhe right environment variables.<p>
-    <p>Note: for now, this plugin use only the ROS version found into /opt/ros. <p>
+    <p>Note: for now, this plugin use only the ROS versions found into /opt/ros. <p>
     <H2>Future develop</H2>
-    <p> Allow to use ROS version not into /opt/ros</p>
-    <p> Allow to use run launch file</p>
-    <p> Allow -+
-
-    +
-    .31_xz.
-    +-to use create a new Node,Service or Message</p>-
-    +
-
+    <p> Allow to use ROS version from a custom path</p>
+    <p> Allow to run launch file</p>
+    <p> Allow to create a new Node,Service or Message</p>
 
     ]]></description>
 
@@ -54,6 +48,9 @@
     <application-components>
         <component>
             <implementation-class>it.achdjian.plugin.ros.RosEnvironments</implementation-class>
+        </component>
+        <component>
+            <implementation-class>it.achdjian.plugin.ros.RosCustomVersion</implementation-class>
         </component>
         <component>
             <implementation-class>it.achdjian.plugin.ros.settings.RosSettings</implementation-class>

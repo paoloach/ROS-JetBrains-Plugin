@@ -1,18 +1,24 @@
 package it.achdjian.plugin.ros.settings
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.xmlb.annotations.Transient
+import it.achdjian.plugin.ros.ui.RosTablePackageModel
+import org.jetbrains.rpc.LOG
 import java.nio.file.Files
 import java.nio.file.Paths
 
 
-data class RosVersion(var path: String, var name:String, var env: Map<String,String>, var envPath: List<String>, var initWorkspaceCmd: InitWorkspaceCmd?, var createPackage: CreatePackage) {
+data class RosVersion(var path: String, var name: String) {
 
-    constructor(path: String) :
-            this(path,Paths.get(path).fileName.toString(),diffEnvironment(Paths.get(path)), emptyList(), findInitCmd(Paths.get(path)), NullCreatePackage()  ){
+    val env = diffEnvironment(Paths.get(path))
+    val initWorkspaceCmd = findInitCmd(Paths.get(path))
+    val envPath: List<String>
+    private val createPackage: CreatePackage
+
+    init {
         envPath = splitPath(env)
         createPackage = createPackageFactory(this)
-
     }
 
     @Transient
@@ -23,7 +29,7 @@ data class RosVersion(var path: String, var name:String, var env: Map<String,Str
         initWorkspaceCmd?.let {
             val cmd = it.executableFile.absolutePath.toString() + " " + it.args
             val envList = env.map { envEntry -> envEntry.key + "=" + envEntry.value }.toTypedArray()
-            val target = Paths.get(path.toString(), "/share/catkin/cmake/toplevel.cmake")
+            val target = Paths.get(path, "/share/catkin/cmake/toplevel.cmake")
             val link = Paths.get(projectPath.path, "src/CMakeLists.txt")
             Files.createSymbolicLink(link, target)
         }
@@ -34,6 +40,7 @@ data class RosVersion(var path: String, var name:String, var env: Map<String,Str
     fun searchPackages() {
         packages.clear()
         val packagesPath = env["ROS_PACKAGE_PATH"]
+        LOG.info("packagePath: $packagesPath")
         packagesPath?.let { path ->
             Files
                     .list(Paths.get(path))
@@ -47,6 +54,8 @@ data class RosVersion(var path: String, var name:String, var env: Map<String,Str
     }
 
     companion object {
+        private val LOG = Logger.getInstance(RosVersion::class.java)
+
         private fun splitPath(env: Map<String, String>): List<String> {
             var path = env["PATH"]
 

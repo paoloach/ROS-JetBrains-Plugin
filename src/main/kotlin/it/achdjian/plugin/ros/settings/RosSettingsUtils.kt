@@ -48,7 +48,10 @@ fun diffEnvironment(rosVersion: Path): Map<String, String> {
         }
     }
 
-    return diff(newEnv, actualEnv)
+    val env  = HashMap(diff(newEnv, actualEnv))
+    if (!env.containsKey("ROS_PACKAGE_PATH"))
+        env["ROS_PACKAGE_PATH"] = actualEnv["ROS_PACKAGE_PATH"]
+    return env
 }
 
 fun diff(newEnv: Map<String, String>, actualEnv: Map<String, String>) =

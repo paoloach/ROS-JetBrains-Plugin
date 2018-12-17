@@ -15,26 +15,15 @@ class VersionSelector : ComboBox<Any>() {
     }
 
     init {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-        state.versions.forEach {
-            addItem(it.name)
-        }
-        addItem(VersionSelectorRenderer.SEPARATOR_STRING)
-        addItem(SHOW_ALL)
+        updateList()
         renderer = VersionSelectorRenderer()
     }
 
-    override fun setSelectedItem(item: Any) {
-        if (item == SHOW_ALL) {
-            ApplicationManager.getApplication().invokeLater {
-               // val allDialog = if (this@PyActiveSdkConfigurable.myModule == null) PythonSdkDetailsDialog(this@PyActiveSdkConfigurable.myProject, this@PyActiveSdkConfigurable.myAddSdkCallback, this@PyActiveSdkConfigurable.getSettingsModifiedCallback()) else PythonSdkDetailsDialog(this@PyActiveSdkConfigurable.myModule!!, this@PyActiveSdkConfigurable.myAddSdkCallback, this@PyActiveSdkConfigurable.getSettingsModifiedCallback())
-               // allDialog.show()
-            }
-        } else {
-            if (VersionSelectorRenderer.SEPARATOR_STRING != item) {
-                super.setSelectedItem(item)
-            }
-
+    fun updateList() {
+        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        removeAll()
+        state.versions.forEach {
+            addItem(it.name)
         }
     }
 

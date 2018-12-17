@@ -12,7 +12,6 @@ class RosTablePackageModel : TableModel {
         private val LOG = Logger.getInstance(RosTablePackageModel::class.java)
     }
 
-
     private var modelListener = HashSet<TableModelListener>()
     private var rosVersion: RosVersion? = null
 

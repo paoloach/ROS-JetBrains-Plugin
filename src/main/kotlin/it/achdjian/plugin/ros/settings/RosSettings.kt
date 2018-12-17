@@ -2,89 +2,35 @@ package it.achdjian.plugin.ros.settings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.BaseComponent
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.FixedSizeButton
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ComboboxSpeedSearch
-import com.intellij.ui.layout.LCFlags
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
 import it.achdjian.plugin.ros.RosEnvironments
 import it.achdjian.plugin.ros.ui.RosTablePackageModel
+import it.achdjian.plugin.ros.ui.RosVersionDetailDialog
 import it.achdjian.plugin.ros.ui.VersionSelector
 import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.stream.Collectors
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 
 
-class ScanActionListener(private val panel: JPanel) : ActionListener {
-    var modified = false
-
-    override fun actionPerformed(p0: ActionEvent?) {
-        val versions = scan()
-
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-
-        versions.filter { !state.contains(it) }.forEach {
-            addVersion(it, panel)
-            state.add(it)
-            modified = true
-        }
-    }
-
-    private fun scan(): List<RosVersion> =
-            Files
-                    .list(Paths.get("/opt/ros"))
-                    .map { RosVersion(it.toString()) }
-                    .collect(Collectors.toList())
-
-}
-
-class SelectEnvironment(private val versionSelector: VersionSelector, val model: RosTablePackageModel) : ActionListener {
-    companion object {
-        private val LOG = Logger.getInstance(RosSettings::class.java)
-    }
-
-    override fun actionPerformed(actionEvent: ActionEvent) {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-        state.versions.forEach {
-            if (it.name == versionSelector.selectedItem) {
-                model.updateVersions(it)
-            }
-        }
-        versionSelector.invalidate()
-    }
-}
-
 class RosSettings : BaseComponent, Configurable {
-    private var scanActionListener: ScanActionListener? = null
+    private var modified = false
+    private val versionSelector = ComboBox<String>()
+    override fun isModified() = modified
+
     private val model = RosTablePackageModel()
 
     override fun initComponent() {
-        val versions = scan()
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-        versions.filter { !state.contains(it) }.forEach {
-            state.add(it)
-        }
-    }
-
-    override fun isModified(): Boolean {
-        var modified = false
-        scanActionListener?.let {
-            modified = it.modified
-        }
-        return modified
+        updateVersionSelector()
     }
 
     override fun apply() {
@@ -95,27 +41,39 @@ class RosSettings : BaseComponent, Configurable {
         val mainPanel = JPanel(layout)
         val version = JLabel("ROS version")
         val emptyLabel = JLabel("  ")
-        val versionSelector = VersionSelector()
+
         ComboboxSpeedSearch(versionSelector)
         versionSelector.putClientProperty(VersionSelector.TABLE_CELL_EDITOR, true)
-        versionSelector.addActionListener(SelectEnvironment(versionSelector, model))
+        versionSelector.addActionListener {
+            val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+            state.versions.forEach {rosVersion->
+                if (rosVersion.name == versionSelector.selectedItem) {
+                    model.updateVersions(rosVersion)
+                }
+            }
+        }
         val preferredSize = versionSelector.preferredSize
 
 
         val detailsButton = FixedSizeButton()
         detailsButton.icon = IconLoader.findIcon("/icons/ros.svg")
         detailsButton.preferredSize = Dimension(preferredSize.height, preferredSize.height)
-        detailsButton.addActionListener{event->
-            val project = ProjectManager.getInstance().defaultProject
-            val dialog = it.achdjian.plugin.ros.ui.RosVersionDetailDialog(project)
-            dialog.show()
+        detailsButton.addActionListener {
+            ApplicationManager.getApplication().invokeLater {
+                val dialog = RosVersionDetailDialog()
+                dialog.show()
+                if (dialog.isOK) {
+                    modified = true
+                    updateVersionSelector()
+                }
+            }
         }
 
         val packageTable = JBTable(model)
 
 
         val c = GridBagConstraints()
-        c.fill = 2
+        c.fill = GridBagConstraints.HORIZONTAL
         c.insets = JBUI.insets(2)
         c.gridx = 0
         c.gridy = 0
@@ -147,27 +105,14 @@ class RosSettings : BaseComponent, Configurable {
         return mainPanel
     }
 
-
-    override fun getDisplayName() = "ROS"
-
-    private fun scan(): List<RosVersion> =
-            Files
-                    .list(Paths.get("/opt/ros"))
-                    .map { RosVersion(it.toString()) }
-                    .collect(Collectors.toList())
-}
-
-fun addVersion(version: RosVersion, panel: JPanel) {
-    version.searchPackages()
-
-    val versionPanel = com.intellij.ui.layout.panel(LCFlags.fillX, title = version.name) {
-        row("path") {
-            label(version.path.toString())
-        }
-        row("init workspace command") {
-            label(version.initWorkspaceCmd?.toString() ?: "Not found")
+    private fun updateVersionSelector() {
+        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        versionSelector.removeAll()
+        state.versions.forEach {
+            versionSelector.addItem(it.name)
         }
     }
 
-    panel.add(versionPanel)
+
+    override fun getDisplayName() = "ROS"
 }

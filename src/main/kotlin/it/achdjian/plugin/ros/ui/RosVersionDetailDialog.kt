@@ -1,24 +1,30 @@
 package it.achdjian.plugin.ros.ui
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.AnActionButton
 import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ListSpeedSearch
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
+import it.achdjian.plugin.ros.RosCustomVersion
 import it.achdjian.plugin.ros.RosEnvironments
+import it.achdjian.plugin.ros.settings.RosVersion
 import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 
-class RosVersionDetailDialog(project: Project) : DialogWrapper(project, true) {
-    val versionList = JBList<String>()
+class RosVersionDetailDialog : DialogWrapper(null, true) {
+    private var versionList = JBList<RosVersion>()
     private var mainPanel: JPanel? = null
 
+    init {
+        title = "ROS VERSION"
+        init()
+    }
+
     override fun createCenterPanel(): JComponent {
+        versionList.cellRenderer = RosVersionListCellRenderer()
         versionList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         ListSpeedSearch(versionList)
 
@@ -27,104 +33,74 @@ class RosVersionDetailDialog(project: Project) : DialogWrapper(project, true) {
                 .createDecorator(versionList)
                 .disableUpDownActions()
                 .setAddAction {
-                    addSdk(it)
-                    updateOkButton()
+                    addSdk()
 
                 }.setEditAction {
                     editSdk()
-                    updateOkButton()
                 }.setRemoveAction {
                     removeSdk()
-                    updateOkButton()
                 }
-//                .addExtraAction{
-//                    PythonSdkDetailsDialog.ShowPathButton()
-//                }
         decorator.setPreferredSize(Dimension(600, 500))
         val panel = decorator.createPanel()
         mainPanel = panel
         refreshVersionList()
-        addListeners()
         return panel
 
     }
 
-    private fun addListeners() {
-//        this.myListener = object : SdkModel.Listener {
-//            override fun sdkChanged(sdk: Sdk, previousName: String?) {
-//                if (sdk == null) {
-//                    `$$$reportNull$$$0`(0)
-//                }
-//
-//                this@PythonSdkDetailsDialog.refreshVersionList()
-//            }
-//        }
-//        this.myProjectSdksModel.addListener(this.myListener)
-//        this.mySdkList.addListSelectionListener(ListSelectionListener { this@PythonSdkDetailsDialog.updateOkButton() })
-    }
-
     private fun refreshVersionList() {
+        versionList.removeAll()
         val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
         versionList.clearSelection()
         versionList.model = CollectionListModel(state.versions)
-        state.versions.forEach {
-
-        }
-//        val allPythonSdks = this.myInterpreterList.getAllPythonSdks(this.myProject)
-//        var projectSdk = this.getSdk()
-//        val notAssociatedWithOtherProjects = (StreamEx.of<Sdk>(allPythonSdks).filter({ sdk -> !sdk.isAssociatedWithAnotherModule(this.myModule) }) as StreamEx<*>).toList()
-//        val pythonSdks = if (this.myHideOtherProjectVirtualenvs) notAssociatedWithOtherProjects else allPythonSdks
-//        this.mySdkList.setModel(CollectionListModel(pythonSdks))
-//        this.mySdkListChanged = false
-//        if (projectSdk != null) {
-//            projectSdk = this.myProjectSdksModel.findSdk(projectSdk!!.getName())
-//            this.mySdkList.clearSelection()
-//            this.mySdkList.setSelectedValue(projectSdk, true)
-//            this.mySdkList.updateUI()
-//        }
-
-    }
-
-    protected fun updateOkButton() {
-//        super.setOKActionEnabled(this.isModified())
     }
 
     private fun removeSdk() {
-//        val selectedSdk = this.getSelectedSdk()
-//        if (selectedSdk != null) {
-//            val sdk = this.myProjectSdksModel.findSdk(selectedSdk)
-//            SdkConfigurationUtil.removeSdk(sdk)
-//            this.myProjectSdksModel.removeSdk(sdk)
-//            this.myProjectSdksModel.removeSdk(selectedSdk)
-//            if (this.myModificators.containsKey(selectedSdk)) {
-//                val modificator = this.myModificators.get(selectedSdk) as SdkModificator
-//                this.myModifiedModificators.remove(modificator)
-//                this.myModificators.remove(selectedSdk)
-//            }
-//
-//            this.refreshVersionList()
-//            this.mySdkListChanged = true
-//            val currentSdk = this.getSdk()
-//            if (currentSdk != null) {
-//                this.mySdkList.setSelectedValue(currentSdk, true)
-//            }
-//        }
-
+        val selectedVersion = versionList.selectedValue
+        selectedVersion?.let {
+            val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
+            if (customVersion.contains(it)) {
+                customVersion.remove(it)
+            }
+            val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+            state.remove(it)
+            refreshVersionList()
+            isOKActionEnabled = true
+        }
     }
 
-    private fun addSdk(button: AnActionButton) {
-//        PythonSdkDetailsStep.show(this.myProject, this.myModule, this.myProjectSdksModel.getSdks(), null as DialogWrapper?, this.mainPanel, button.preferredPopupPoint!!.screenPoint, null as String?) { sdk -> this.addCreatedSdk(sdk, true) }
+    private fun addSdk() {
+        ApplicationManager.getApplication().invokeLater {
+            val addDialog = AddROSVersionDialog()
+            addDialog.show()
+
+            if (addDialog.isOK) {
+                val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
+                customVersion.versions[addDialog.name] = addDialog.path
+                val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+                state.add(RosVersion(addDialog.path, addDialog.name))
+                refreshVersionList()
+                isOKActionEnabled = true
+            }
+        }
     }
 
     private fun editSdk() {
-//        val currentSdk = this.getSelectedSdk()
-//        if (currentSdk != null) {
-//            if (currentSdk!!.getSdkAdditionalData() is RemoteSdkAdditionalData<*>) {
-//                this.editRemoteSdk(currentSdk)
-//            } else {
-//                this.editSdk(currentSdk)
-//            }
-//        }
+        ApplicationManager.getApplication().invokeLater {
+            versionList.selectedValue?.let {
+                val addDialog = AddROSVersionDialog(it.name, it.path)
+                addDialog.show()
 
+                if (addDialog.isOK) {
+                    val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+                    val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
+                    state.remove(it)
+                    customVersion.versions[addDialog.name] = addDialog.path
+                    state.add(RosVersion(addDialog.path, addDialog.name))
+                    refreshVersionList()
+                    isOKActionEnabled = true
+                }
+            }
+        }
     }
 }
