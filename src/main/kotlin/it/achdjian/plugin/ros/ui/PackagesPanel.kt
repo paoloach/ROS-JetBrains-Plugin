@@ -18,7 +18,6 @@ class PackagesPanel() : JPanel() {
 
     fun setPackages(data: List<String>) {
         removeAll()
-        println("data size: ${data.size}")
         data.forEach {
             val checkBox = CheckBox(it)
             checkBox.addActionListener { action ->

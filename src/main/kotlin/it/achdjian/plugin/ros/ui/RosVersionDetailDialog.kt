@@ -24,28 +24,20 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
     }
 
     override fun createCenterPanel(): JComponent {
-        versionList.cellRenderer = RosVersionListCellRenderer()
-        versionList.selectionMode = ListSelectionModel.SINGLE_SELECTION
-        ListSpeedSearch(versionList)
-
-
         val decorator = ToolbarDecorator
                 .createDecorator(versionList)
                 .disableUpDownActions()
-                .setAddAction {
-                    addSdk()
-
-                }.setEditAction {
-                    editSdk()
-                }.setRemoveAction {
-                    removeSdk()
-                }
+                .setAddAction { addSdk() }
+                .setEditAction { editSdk() }
+                .setRemoveAction { removeSdk() }
         decorator.setPreferredSize(Dimension(600, 500))
         val panel = decorator.createPanel()
         mainPanel = panel
+        versionList.cellRenderer = RosVersionListCellRenderer()
+        versionList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        ListSpeedSearch(versionList)
         refreshVersionList()
         return panel
-
     }
 
     private fun refreshVersionList() {
@@ -63,6 +55,9 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
                 customVersion.remove(it)
             }
             val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+            if (state.isDefaultVersion(it.name)) {
+                customVersion.removeDefault(it.name)
+            }
             state.remove(it)
             refreshVersionList()
             isOKActionEnabled = true
@@ -94,6 +89,9 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
                 if (addDialog.isOK) {
                     val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
                     val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
+                    if (state.isDefaultVersion(it.name)) {
+                        customVersion.removeDefault(it.name)
+                    }
                     state.remove(it)
                     customVersion.versions[addDialog.name] = addDialog.path
                     state.add(RosVersion(addDialog.path, addDialog.name))

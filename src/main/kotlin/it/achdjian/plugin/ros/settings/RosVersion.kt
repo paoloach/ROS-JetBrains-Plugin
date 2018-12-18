@@ -11,6 +11,7 @@ import java.nio.file.Paths
 
 data class RosVersion(var path: String, var name: String) {
 
+    val system = false
     val env = diffEnvironment(Paths.get(path))
     val initWorkspaceCmd = findInitCmd(Paths.get(path))
     val envPath: List<String>

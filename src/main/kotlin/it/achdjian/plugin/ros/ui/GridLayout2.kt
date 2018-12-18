@@ -41,7 +41,6 @@ class GridLayout2(row: Int, col: Int) : GridLayout(row, col, 20, 20) {
 
 
     override fun minimumLayoutSize(parent: Container): Dimension {
-        System.err.println("minimumLayoutSize")
         synchronized(parent.treeLock) {
             val insets = parent.insets
             val nComponents = parent.componentCount

@@ -41,16 +41,11 @@ class RosSettings : BaseComponent, Configurable {
         val mainPanel = JPanel(layout)
         val version = JLabel("ROS version")
         val emptyLabel = JLabel("  ")
-
+        updateVersionSelector()
         ComboboxSpeedSearch(versionSelector)
         versionSelector.putClientProperty(VersionSelector.TABLE_CELL_EDITOR, true)
         versionSelector.addActionListener {
-            val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-            state.versions.forEach {rosVersion->
-                if (rosVersion.name == versionSelector.selectedItem) {
-                    model.updateVersions(rosVersion)
-                }
-            }
+            updateTable()
         }
         val preferredSize = versionSelector.preferredSize
 
@@ -70,6 +65,7 @@ class RosSettings : BaseComponent, Configurable {
         }
 
         val packageTable = JBTable(model)
+        updateTable()
 
 
         val c = GridBagConstraints()
@@ -105,9 +101,19 @@ class RosSettings : BaseComponent, Configurable {
         return mainPanel
     }
 
+    private fun updateTable() {
+        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        state.versions.forEach { rosVersion ->
+            if (rosVersion.name == versionSelector.selectedItem) {
+                model.updateVersions(rosVersion)
+            }
+        }
+    }
+
     private fun updateVersionSelector() {
         val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-        versionSelector.removeAll()
+        versionSelector.removeAllItems()
+        versionSelector
         state.versions.forEach {
             versionSelector.addItem(it.name)
         }
