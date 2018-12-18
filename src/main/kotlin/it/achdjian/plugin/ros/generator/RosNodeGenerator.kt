@@ -4,7 +4,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.CMakeAbstractCPPProjectGenerator
 import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.settings.CMakeProjectSettings
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
@@ -23,27 +22,27 @@ import javax.swing.JPanel
 class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
 
     private var version: RosVersion? = null
+    private val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
     private lateinit var packagesPanel: PackagesPanel
 
     override fun getName(): String = "ROS workspace"
 
     override fun getSettingsPanel(): JComponent {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
         val versionsName = state.versions.map { it.name }
 
         val panel = JPanel()
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
 
         packagesPanel = PackagesPanel()
+        state.versions.firstOrNull()?.let {
+            showPackages(it.name)
+        }
+
 
         val optionPanel = panel("ROS version") {
             row("ROS version") {
                 comboBox(versionsName) {
-                    version = state.versions.find { version -> version.name == it.item.toString() }
-                    version?.let {
-                        it.searchPackages()
-                        packagesPanel.setPackages(it.packages)
-                    }
+                    showPackages(it.item.toString())
                 }
             }
         }
@@ -52,6 +51,14 @@ class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
         panel.add(packagesPanel)
 
         return panel
+    }
+
+    private fun showPackages(versionName: String) {
+        version = state.versions.find { version -> version.name == versionName }
+        version?.let {
+            it.searchPackages()
+            packagesPanel.setPackages(it.packages)
+        }
     }
 
     override fun createSourceFiles(projectName: String, path: VirtualFile): Array<VirtualFile> {
@@ -68,7 +75,7 @@ class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
         val cMakeWorkspace = CMakeWorkspace.getInstance(project)
         version?.let {
             val settings = cMakeWorkspace.settings
-            var releaseProfile = releaseProfile(it, File(path.path))
+            val releaseProfile = releaseProfile(it, File(path.path))
 
             settings.profiles = listOf(releaseProfile)
         }
