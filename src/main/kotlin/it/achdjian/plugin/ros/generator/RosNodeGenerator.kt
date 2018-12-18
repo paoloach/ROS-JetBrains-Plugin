@@ -8,8 +8,8 @@ import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.CMakeAbstractCPPPro
 import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.settings.CMakeProjectSettings
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
 import it.achdjian.plagin.ros.ui.panel
-import it.achdjian.plugin.ros.RosEnvironments
-import it.achdjian.plugin.ros.settings.RosVersion
+import it.achdjian.plugin.ros.data.RosEnvironments
+import it.achdjian.plugin.ros.data.RosVersion
 import it.achdjian.plugin.ros.ui.PackagesPanel
 import it.achdjian.plugin.ros.utils.createMainCMakeLists
 import it.achdjian.plugin.ros.utils.releaseProfile

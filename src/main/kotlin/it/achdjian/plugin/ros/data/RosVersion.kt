@@ -1,19 +1,20 @@
-package it.achdjian.plugin.ros.settings
+package it.achdjian.plugin.ros.data
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.xmlb.annotations.Transient
-import it.achdjian.plugin.ros.ui.RosTablePackageModel
-import org.jetbrains.rpc.LOG
+import it.achdjian.plugin.ros.settings.CreatePackage
+import it.achdjian.plugin.ros.settings.createPackageFactory
+import it.achdjian.plugin.ros.settings.diffEnvironment
+import it.achdjian.plugin.ros.settings.findInitCmd
 import java.nio.file.Files
 import java.nio.file.Paths
 
 
 data class RosVersion(var path: String, var name: String) {
 
-    val system = false
     val env = diffEnvironment(Paths.get(path))
-    val initWorkspaceCmd = findInitCmd(Paths.get(path))
+    private val initWorkspaceCmd = findInitCmd(Paths.get(path))
     val envPath: List<String>
     private val createPackage: CreatePackage
 
@@ -23,13 +24,11 @@ data class RosVersion(var path: String, var name: String) {
     }
 
     @Transient
-    val packages: MutableList<String> = ArrayList()
+    val packages: MutableList<RosPackage> = ArrayList()
 
     fun initWorkspace(projectPath: VirtualFile) {
 
         initWorkspaceCmd?.let {
-            val cmd = it.executableFile.absolutePath.toString() + " " + it.args
-            val envList = env.map { envEntry -> envEntry.key + "=" + envEntry.value }.toTypedArray()
             val target = Paths.get(path, "/share/catkin/cmake/toplevel.cmake")
             val link = Paths.get(projectPath.path, "src/CMakeLists.txt")
             Files.createSymbolicLink(link, target)
@@ -46,9 +45,9 @@ data class RosVersion(var path: String, var name: String) {
             Files
                     .list(Paths.get(path))
                     .filter { toFilter -> toFilter.resolve("package.xml").toFile().exists() }
-                    .map { toExtractName -> toExtractName.fileName.toString() }
-                    .forEach { toAdd ->
-                        packages.add(toAdd)
+                    .map { path -> RosPackage(path) }
+                    .forEach { rosPackage ->
+                        packages.add(rosPackage)
                     }
         }
         packages.sortWith(PackagesComparator())
@@ -75,13 +74,13 @@ data class RosVersion(var path: String, var name: String) {
 }
 
 
-class PackagesComparator : Comparator<String> {
-    override fun compare(a: String, b: String): Int {
-        val isTopA = isTop(a)
-        val isTopB = isTop(b)
+class PackagesComparator : Comparator<RosPackage> {
+    override fun compare(a: RosPackage, b: RosPackage): Int {
+        val isTopA = isTop(a.name)
+        val isTopB = isTop(b.name)
 
         if (isTopA && isTopB) {
-            return a.compareTo(b)
+            return a.name.compareTo(b.name)
         }
         if (isTopA && !isTopB) {
             return -1
@@ -89,7 +88,7 @@ class PackagesComparator : Comparator<String> {
         if (!isTopA && isTopB) {
             return 1
         }
-        return a.compareTo(b)
+        return a.name.compareTo(b.name)
     }
 
 

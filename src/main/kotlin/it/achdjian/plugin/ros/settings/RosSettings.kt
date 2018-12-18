@@ -9,7 +9,7 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ComboboxSpeedSearch
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import it.achdjian.plugin.ros.RosEnvironments
+import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.ui.RosTablePackageModel
 import it.achdjian.plugin.ros.ui.RosVersionDetailDialog
 import it.achdjian.plugin.ros.ui.VersionSelector

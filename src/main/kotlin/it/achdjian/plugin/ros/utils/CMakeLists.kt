@@ -2,8 +2,8 @@ package it.achdjian.plugin.ros.utils
 
 import com.intellij.openapi.util.io.FileUtil
 import com.jetbrains.cidr.cpp.cmake.CMakeSettings
-import it.achdjian.plugin.ros.RosEnvironments
-import it.achdjian.plugin.ros.settings.RosVersion
+import it.achdjian.plugin.ros.data.RosEnvironments
+import it.achdjian.plugin.ros.data.RosVersion
 import java.io.File
 
 fun getResourceAsString(resourceName: String): String {

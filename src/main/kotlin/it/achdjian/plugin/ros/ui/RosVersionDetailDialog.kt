@@ -6,9 +6,9 @@ import com.intellij.ui.CollectionListModel
 import com.intellij.ui.ListSpeedSearch
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
-import it.achdjian.plugin.ros.RosCustomVersion
-import it.achdjian.plugin.ros.RosEnvironments
-import it.achdjian.plugin.ros.settings.RosVersion
+import it.achdjian.plugin.ros.data.RosCustomVersion
+import it.achdjian.plugin.ros.data.RosEnvironments
+import it.achdjian.plugin.ros.data.RosVersion
 import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -88,7 +88,7 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
 
                 if (addDialog.isOK) {
                     val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-                    val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
+                    val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java,RosCustomVersion(HashMap()))
                     if (state.isDefaultVersion(it.name)) {
                         customVersion.removeDefault(it.name)
                     }

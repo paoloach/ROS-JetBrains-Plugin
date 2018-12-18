@@ -1,6 +1,7 @@
 package it.achdjian.plugin.ros.settings
 
 import com.intellij.openapi.vfs.VirtualFile
+import it.achdjian.plugin.ros.data.RosVersion
 import java.io.File
 
 fun createPackageFactory(rosVersion: RosVersion): CreatePackage {

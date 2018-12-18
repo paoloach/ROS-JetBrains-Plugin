@@ -1,7 +1,6 @@
-package it.achdjian.plugin.ros
+package it.achdjian.plugin.ros.data
 
 import com.intellij.openapi.application.ApplicationManager
-import it.achdjian.plugin.ros.settings.RosVersion
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths

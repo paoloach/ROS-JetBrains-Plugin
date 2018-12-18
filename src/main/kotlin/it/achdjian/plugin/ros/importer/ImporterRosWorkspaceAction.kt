@@ -14,14 +14,11 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import com.jetbrains.cidr.cpp.cmake.projectWizard.CLionProjectWizardUtils
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
-import it.achdjian.plugin.ros.RosEnvironments
-import it.achdjian.plugin.ros.settings.RosVersion
-import it.achdjian.plugin.ros.utils.createMainCMakeLists
+import it.achdjian.plugin.ros.data.RosVersion
 import it.achdjian.plugin.ros.utils.releaseProfile
-import org.apache.commons.codec.Charsets
+import it.achdjian.plugin.ros.data.RosEnvironments
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path

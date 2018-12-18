@@ -47,10 +47,10 @@
 
     <application-components>
         <component>
-            <implementation-class>it.achdjian.plugin.ros.RosEnvironments</implementation-class>
+            <implementation-class>it.achdjian.plugin.ros.data.RosEnvironments</implementation-class>
         </component>
         <component>
-            <implementation-class>it.achdjian.plugin.ros.RosCustomVersion</implementation-class>
+            <implementation-class>it.achdjian.plugin.ros.data.RosCustomVersion</implementation-class>
         </component>
         <component>
             <implementation-class>it.achdjian.plugin.ros.settings.RosSettings</implementation-class>

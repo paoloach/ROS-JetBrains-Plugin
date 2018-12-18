@@ -1,8 +1,7 @@
 package it.achdjian.plugin.ros.ui
 
 import com.intellij.openapi.diagnostic.Logger
-import it.achdjian.plugin.ros.settings.RosSettings
-import it.achdjian.plugin.ros.settings.RosVersion
+import it.achdjian.plugin.ros.data.RosVersion
 import javax.swing.event.TableModelEvent
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
@@ -35,11 +34,10 @@ class RosTablePackageModel : TableModel {
 
 
     override fun getRowCount(): Int {
-        val count = rosVersion?.packages?.size ?: 0
-        return count
+        return rosVersion?.packages?.size ?: 0
     }
 
-    override fun getColumnName(colId: Int) :String{
+    override fun getColumnName(colId: Int): String {
         val name = when (colId) {
             0 -> "Name"
             1 -> "Version"
@@ -49,7 +47,7 @@ class RosTablePackageModel : TableModel {
             }
         }
         LOG.info("Col $colId: $name")
-        return name;
+        return name
     }
 
     override fun isCellEditable(p0: Int, p1: Int) = false
@@ -61,21 +59,19 @@ class RosTablePackageModel : TableModel {
 
     override fun getColumnCount() = 3
 
-    override fun getValueAt(rowIndex: Int, colIndex: Int): Any {
-        val value = rosVersion?.let {
-            val packages = it.packages
-            if (packages.size >= rowIndex) {
-                when (colIndex) {
-                    0 -> packages[rowIndex]
-                    else -> {
-                        ""
-                    }
+    override fun getValueAt(rowIndex: Int, colIndex: Int) = rosVersion?.let {
+        val packages = it.packages
+        if (packages.size >= rowIndex) {
+            when (colIndex) {
+                0 -> packages[rowIndex].name
+                1 -> packages[rowIndex].version
+                2 -> packages[rowIndex].description
+                else -> {
+                    ""
                 }
-            } else {
-                ""
             }
-        } ?: ""
-        return value
-    }
-
+        } else {
+            ""
+        }
+    } ?: ""
 }

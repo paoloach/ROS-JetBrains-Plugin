@@ -1,9 +1,8 @@
-package it.achdjian.plugin.ros
+package it.achdjian.plugin.ros.data
 
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import it.achdjian.plugin.ros.settings.RosVersion
 
 @State(name = "ROS.configuration", storages = [(Storage("ROS.xml"))])
 data class RosCustomVersion(var versions: MutableMap<String, String>) : PersistentStateComponent<RosCustomVersion> {

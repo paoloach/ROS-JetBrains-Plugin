@@ -3,7 +3,7 @@ package it.achdjian.plugin.ros.ui
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
-import it.achdjian.plugin.ros.settings.RosVersion
+import it.achdjian.plugin.ros.data.RosVersion
 import javax.swing.JList
 
 class RosVersionListCellRenderer : ColoredListCellRenderer<RosVersion>() {

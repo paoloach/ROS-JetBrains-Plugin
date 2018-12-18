@@ -2,9 +2,8 @@ package it.achdjian.plugin.ros.ui
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.ComboBox
-import it.achdjian.plugin.ros.RosEnvironments
+import it.achdjian.plugin.ros.data.RosEnvironments
 import java.awt.Component
-import java.awt.Graphics
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
