@@ -48,7 +48,9 @@ class AddROSVersionDialog(startName:String, startPath:String) : DialogWrapper(nu
             if (versionPath.text.isNotEmpty() && versionName.text.isNotEmpty())
                 isOKActionEnabled=true
         })
-        versionPath.addKeyListener(NameKeyListener{
+
+
+        versionPath.childComponent.textEditor.addKeyListener(NameKeyListener{
             if (versionPath.text.isNotEmpty() && versionName.text.isNotEmpty())
                 isOKActionEnabled=true
         })
