@@ -1,10 +1,15 @@
 package it.achdjian.plugin.ros.utils
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.data.RosVersion
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 fun getResourceAsString(resourceName: String): String {
     val resource = RosEnvironments::class.java.classLoader.getResourceAsStream(resourceName)
@@ -31,4 +36,21 @@ fun releaseProfile(version: RosVersion, baseDir: File) : CMakeSettings.Profile {
             version.env,
             buildDir,
             "")
+}
+
+fun getRosVersionFromCMakeLists(file: VirtualFile): RosVersion? {
+    val cMakeListsTarget = getCMakeListsTarget(file)
+    cMakeListsTarget?.let {
+        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        return state.getOwnerVersion(it)
+    } ?: return null
+}
+
+
+fun getCMakeListsTarget(file: VirtualFile): Path? {
+    val path = Paths.get(file.path)
+    if (Files.isSymbolicLink(path)) {
+        return Files.readSymbolicLink(path)
+    }
+    return null
 }

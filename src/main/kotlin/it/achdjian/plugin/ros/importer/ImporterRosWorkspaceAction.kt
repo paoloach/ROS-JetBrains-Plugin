@@ -5,7 +5,6 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.project.DumbAware
@@ -16,9 +15,8 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.cidr.cpp.cmake.projectWizard.CLionProjectWizardUtils
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
-import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.utils.getRosVersionFromCMakeLists
 import it.achdjian.plugin.ros.utils.releaseProfile
-import it.achdjian.plugin.ros.data.RosEnvironments
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -90,22 +88,6 @@ fun invalidRosEnvironment() {
     Messages.showErrorDialog("Directory doesn't contains a valid ROS environment", "Import ROS workspace");
 }
 
-
-fun getCMakeListsTarget(file: VirtualFile): Path? {
-    val path = Paths.get(file.path)
-    if (Files.isSymbolicLink(path)) {
-        return Files.readSymbolicLink(path)
-    }
-    return null
-}
-
-fun getRosVersionFromCMakeLists(file: VirtualFile): RosVersion? {
-    val cMakeListsTarget = getCMakeListsTarget(file)
-    cMakeListsTarget?.let {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-        return state.getOwnerVersion(it)
-    } ?: return null
-}
 
 fun choseFile(): VirtualFile? {
     val fileChooserDescriptor = MyFileChooserDescriptor()

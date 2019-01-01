@@ -16,6 +16,8 @@ data class RosVersion(var path: String, var name: String) {
     val env = diffEnvironment(Paths.get(path))
     private val initWorkspaceCmd = findInitCmd(Paths.get(path))
     val envPath: List<String>
+    val rosLaunch: String
+        get() = path+"/bin/roslaunch"
     private val createPackage: CreatePackage
 
     init {

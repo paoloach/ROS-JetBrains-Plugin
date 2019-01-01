@@ -23,7 +23,7 @@
     <depends>com.intellij.modules.clion</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
+        <configurationType implementation="it.achdjian.plugin.ros.launch.LaunchConfigurationType" id="it.achdjian.plugin.ros.launch.conf.type"/>
         <directoryProjectGenerator
                 implementation="it.achdjian.plugin.ros.generator.RosNodeGenerator"/>
         <applicationConfigurable order="last" id="ROS.plugin.achdjian.it"
