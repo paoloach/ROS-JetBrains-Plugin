@@ -40,15 +40,13 @@ dependencies {
 
 
 
-intellij {
-    version '2018.3.1'
-    pluginName 'ros_plugin'
-}
+
 
 patchPluginXml {
     sinceBuild "182.9999"
     untilBuild "183.*"
     changeNotes """
+      <p>&#8226; 1.2.0 &#8594; Run launch files inside the IDE</p>
       <p>&#8226; 1.1.0 &#8594; Allow to use a custom version</p>
       <p>&#8226; 1.0.1 &#8594; Change plugin name</p>
       <p>&#8226; 1.0.0 &#8594; First release</p>

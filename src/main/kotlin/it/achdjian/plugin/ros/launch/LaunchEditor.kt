@@ -4,11 +4,13 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.IntegerField
 import com.intellij.ui.layout.panel
 import it.achdjian.plugin.ros.ui.LauncherFileChooser
+import java.io.File
 import javax.swing.JCheckBox
 
 
@@ -36,7 +38,7 @@ class LaunchEditor( project: Project) : SettingsEditor<LaunchConfiguration>() {
     }
 
     override fun applyEditorTo(launchConfiguration: LaunchConfiguration) {
-        launchConfiguration.path = VirtualFileManager.getInstance().findFileByUrl("file://${browseButton.text}")
+        launchConfiguration.path = VfsUtil.findFileByIoFile(File(browseButton.text), true)
         launchConfiguration.rosMasterAddr=rosMasterAddr.text
         launchConfiguration.rosMasterPort=rosMasterPort.value
         launchConfiguration.screen=screen.isSelected
