@@ -2,21 +2,23 @@ package it.achdjian.plugin.ros.launch
 
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.*
+import com.intellij.execution.process.KillableColoredProcessHandler
+import com.intellij.execution.process.NopProcessHandler
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.ApplicationManager
 import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.utils.getEnvironmentVariables
 
-class LaunchLauncher(val launchConfiguration: LaunchConfiguration, environment: ExecutionEnvironment) : CommandLineState(environment) {
+class LaunchLauncher(private val launchConfiguration: LaunchConfiguration, environment: ExecutionEnvironment) : CommandLineState(environment) {
     private val rosEnvironments = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
 
     override fun startProcess(): ProcessHandler {
         return launchConfiguration.path?.let {launchFile->
             val rosVersion = rosEnvironments.getVersion(environment.project)
-            rosVersion?.let {rosVersion->
-                val environmentVariables = getEnvironmentVariables(environment.project, rosVersion.env)
-                val cmdLine = GeneralCommandLine(rosVersion.rosLaunch)
+            rosVersion?.let {
+                val environmentVariables = getEnvironmentVariables(environment.project, it.env)
+                val cmdLine = GeneralCommandLine(it.rosLaunch)
                 if (launchConfiguration.verbose){
                     cmdLine.addParameter("-v")
                 }

@@ -17,7 +17,7 @@ plugins {
 
 
 group 'plugin.achdjian.it'
-version '1.1.0'
+version '1.2.0'
 
 sourceCompatibility = 1.8
 
@@ -37,9 +37,6 @@ dependencies {
     compileOnly files('/opt/clion/lib/clion.jar')
     compileOnly files("/opt/clion/plugins/python/lib/python.jar")
 }
-
-
-
 
 
 patchPluginXml {
@@ -64,18 +61,18 @@ compileKotlin {
 }
 
 task copyPlugin2018_1(type: Copy) {
-        from file("${buildDir}/libs/plugin.ros-1.1.0.jar")
+        from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
     into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.1/config/plugins/ros_plugin//lib")
 }
 
 task copyPlugin2018_2(type: Copy) {
 
-    from file("${buildDir}/libs/plugin.ros-1.1.0.jar")
+    from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
     into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.2/config/plugins/ros_plugin//lib")
 }
 
 task copyPlugin2018_3(type: Copy) {
-    from file("${buildDir}/libs/plugin.ros-1.1.0.jar")
+    from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
     into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.3/config/plugins/ros_plugin//lib")
 }
 
