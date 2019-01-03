@@ -15,11 +15,12 @@ class RosTablePackageModel : TableModel {
     private var rosVersion: RosVersion? = null
 
     fun updateVersions(newRosVersion: RosVersion) {
+        LOG.trace("Update version: ${newRosVersion.name}")
         rosVersion = newRosVersion
         newRosVersion.searchPackages()
-        LOG.info("Found ${newRosVersion.packages.size}")
+        LOG.trace("Found ${newRosVersion.packages.size}")
         modelListener.forEach {
-            LOG.info("Notify table change")
+            LOG.trace("Notify table change")
             it.tableChanged(TableModelEvent(this))
         }
     }
@@ -46,7 +47,6 @@ class RosTablePackageModel : TableModel {
                 ""
             }
         }
-        LOG.info("Col $colId: $name")
         return name
     }
 

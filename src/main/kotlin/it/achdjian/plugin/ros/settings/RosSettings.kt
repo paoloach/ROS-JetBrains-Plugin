@@ -2,6 +2,7 @@ package it.achdjian.plugin.ros.settings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.BaseComponent
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.FixedSizeButton
@@ -23,6 +24,9 @@ import javax.swing.JScrollPane
 
 
 class RosSettings : BaseComponent, Configurable {
+    companion object {
+        private val LOG = Logger.getInstance(RosSettings::class.java)
+    }
     private var modified = false
     private val versionSelector = ComboBox<String>()
     override fun isModified() = modified
@@ -103,6 +107,7 @@ class RosSettings : BaseComponent, Configurable {
 
     private fun updateTable() {
         val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        LOG.trace("selected version: ${versionSelector.selectedItem}")
         state.versions.forEach { rosVersion ->
             if (rosVersion.name == versionSelector.selectedItem) {
                 model.updateVersions(rosVersion)

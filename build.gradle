@@ -17,7 +17,7 @@ plugins {
 
 
 group 'plugin.achdjian.it'
-version '1.2.0'
+version '1.2.1'
 
 sourceCompatibility = 1.8
 
@@ -43,6 +43,7 @@ patchPluginXml {
     sinceBuild "182.9999"
     untilBuild "183.*"
     changeNotes """
+      <p>&#8226; 1.2.1 &#8594; fix bug in ROS version environment parsing</p>
       <p>&#8226; 1.2.0 &#8594; Run launch files inside the IDE</p>
       <p>&#8226; 1.1.0 &#8594; Allow to use a custom version</p>
       <p>&#8226; 1.0.1 &#8594; Change plugin name</p>
@@ -50,10 +51,9 @@ patchPluginXml {
       """
 }
 
-
-publishPlugin {
-    username 'pachdjian@gmail.com'
-    password 'nutellaC++17'
+intellij {
+    version '2018.3.1'
+    pluginName 'ros_plugin'
 }
 
 compileKotlin {
@@ -73,7 +73,7 @@ task copyPlugin2018_2(type: Copy) {
 
 task copyPlugin2018_3(type: Copy) {
     from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
-    into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.3/config/plugins/ros_plugin//lib")
+    into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.3/config/plugins/plugin.ros/lib")
 }
 
 task execCLion(type: Exec) {

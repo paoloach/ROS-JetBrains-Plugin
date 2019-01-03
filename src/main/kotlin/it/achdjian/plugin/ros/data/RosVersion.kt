@@ -7,11 +7,30 @@ import it.achdjian.plugin.ros.settings.CreatePackage
 import it.achdjian.plugin.ros.settings.createPackageFactory
 import it.achdjian.plugin.ros.settings.diffEnvironment
 import it.achdjian.plugin.ros.settings.findInitCmd
+import it.achdjian.plugin.ros.ui.RosTablePackageModel
 import java.nio.file.Files
 import java.nio.file.Paths
 
 
 data class RosVersion(var path: String, var name: String) {
+    companion object {
+        private val LOG = Logger.getInstance(RosVersion::class.java)
+
+        private fun splitPath(env: Map<String, String>): List<String> {
+            var path = env["PATH"]
+
+            if (path == null) {
+                val actualEnv = System.getenv()
+                path = actualEnv["PATH"]
+            }
+            val splittedPath = ArrayList<String>()
+            path?.let {
+                splittedPath.addAll(it.split(":"))
+            }
+
+            return splittedPath
+        }
+    }
 
     val env = diffEnvironment(Paths.get(path))
     private val initWorkspaceCmd = findInitCmd(Paths.get(path))
@@ -21,6 +40,7 @@ data class RosVersion(var path: String, var name: String) {
     private val createPackage: CreatePackage
 
     init {
+        LOG.trace("scan version $name in path $path")
         envPath = splitPath(env)
         createPackage = createPackageFactory(this)
     }
@@ -42,7 +62,7 @@ data class RosVersion(var path: String, var name: String) {
     fun searchPackages() {
         packages.clear()
         val packagesPath = env["ROS_PACKAGE_PATH"]
-        LOG.info("packagePath: $packagesPath")
+        LOG.trace("packagePath: $packagesPath")
         packagesPath?.let { path ->
             Files
                     .list(Paths.get(path))
@@ -55,24 +75,6 @@ data class RosVersion(var path: String, var name: String) {
         packages.sortWith(PackagesComparator())
     }
 
-    companion object {
-        private val LOG = Logger.getInstance(RosVersion::class.java)
-
-        private fun splitPath(env: Map<String, String>): List<String> {
-            var path = env["PATH"]
-
-            if (path == null) {
-                val actualEnv = System.getenv()
-                path = actualEnv["PATH"]
-            }
-            val splittedPath = ArrayList<String>()
-            path?.let {
-                splittedPath.addAll(it.split(":"))
-            }
-
-            return splittedPath
-        }
-    }
 }
 
 
