@@ -7,8 +7,8 @@ import com.intellij.ui.ListSpeedSearch
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import it.achdjian.plugin.ros.data.RosCustomVersion
-import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.data.getRosEnvironment
 import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -42,7 +42,7 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
 
     private fun refreshVersionList() {
         versionList.removeAll()
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        val state = getRosEnvironment()
         versionList.clearSelection()
         versionList.model = CollectionListModel(state.versions)
     }
@@ -54,7 +54,7 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
             if (customVersion.contains(it)) {
                 customVersion.remove(it)
             }
-            val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+            val state = getRosEnvironment()
             if (state.isDefaultVersion(it.name)) {
                 customVersion.removeDefault(it.name)
             }
@@ -72,7 +72,7 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
             if (addDialog.isOK) {
                 val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
                 customVersion.versions[addDialog.name] = addDialog.path
-                val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+                val state = getRosEnvironment()
                 state.add(RosVersion(addDialog.path, addDialog.name))
                 refreshVersionList()
                 isOKActionEnabled = true
@@ -87,8 +87,8 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
                 addDialog.show()
 
                 if (addDialog.isOK) {
-                    val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
-                    val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java,RosCustomVersion(HashMap()))
+                    val state = getRosEnvironment()
+                    val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
                     if (state.isDefaultVersion(it.name)) {
                         customVersion.removeDefault(it.name)
                     }

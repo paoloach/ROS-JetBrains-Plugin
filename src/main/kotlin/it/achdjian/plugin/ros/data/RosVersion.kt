@@ -59,7 +59,7 @@ data class RosVersion(var path: String, var name: String) {
 
     fun createPackage(path: VirtualFile, name: String, dependencies: List<String>) = createPackage.createPackage(path, name, dependencies)
 
-    fun searchPackages() {
+    fun searchPackages() : List<RosPackage> {
         packages.clear()
         val packagesPath = env["ROS_PACKAGE_PATH"]
         LOG.trace("packagePath: $packagesPath")
@@ -67,12 +67,13 @@ data class RosVersion(var path: String, var name: String) {
             Files
                     .list(Paths.get(path))
                     .filter { toFilter -> toFilter.resolve("package.xml").toFile().exists() }
-                    .map { path -> RosPackage(path) }
+                    .map { path -> RosPackage(path, env) }
                     .forEach { rosPackage ->
                         packages.add(rosPackage)
                     }
         }
         packages.sortWith(PackagesComparator())
+        return packages
     }
 
 }

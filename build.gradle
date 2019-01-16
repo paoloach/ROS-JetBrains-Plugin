@@ -34,7 +34,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.9.7'
-    compileOnly files('/opt/clion/lib/clion.jar')
+    compileOnly files('/opt/clion-2018.3/lib/clion.jar') 
     compileOnly files("/opt/clion/plugins/python/lib/python.jar")
 }
 
@@ -64,19 +64,19 @@ compileKotlin {
 }
 
 task copyPlugin2018_1(type: Copy) {
-        from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
+        from file("${buildDir}/libs/plugin.ros-1.2.1.jar")
     into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.1/config/plugins/ros_plugin//lib")
 }
 
 task copyPlugin2018_2(type: Copy) {
 
-    from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
+    from file("${buildDir}/libs/plugin.ros-1.2.1.jar")
     into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.2/config/plugins/ros_plugin//lib")
 }
 
 task copyPlugin2018_3(type: Copy) {
-    from file("${buildDir}/libs/plugin.ros-1.2.0.jar")
-    into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.3/config/plugins/plugin.ros/lib")
+    from file("${buildDir}/libs/plugin.ros-1.2.1.jar")
+    into file("${project.gradle.gradleUserHomeDir}/../.CLion2018.3/config/plugins/ros_plugin/lib")
 }
 
 task execCLion(type: Exec) {

@@ -1,6 +1,5 @@
 package it.achdjian.plugin.ros.generator
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -8,8 +7,8 @@ import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.CMakeAbstractCPPPro
 import com.jetbrains.cidr.cpp.cmake.projectWizard.generators.settings.CMakeProjectSettings
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
 import it.achdjian.plagin.ros.ui.panel
-import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.data.getRosEnvironment
 import it.achdjian.plugin.ros.ui.PackagesPanel
 import it.achdjian.plugin.ros.utils.createMainCMakeLists
 import it.achdjian.plugin.ros.utils.releaseProfile
@@ -22,7 +21,7 @@ import javax.swing.JPanel
 class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
 
     private var version: RosVersion? = null
-    private val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+    private val state = getRosEnvironment()
     private lateinit var packagesPanel: PackagesPanel
 
     override fun getName(): String = "ROS workspace"
@@ -56,8 +55,7 @@ class RosNodeGenerator : CMakeAbstractCPPProjectGenerator() {
     private fun showPackages(versionName: String) {
         version = state.versions.find { version -> version.name == versionName }
         version?.let {
-            it.searchPackages()
-            packagesPanel.setPackages(it.packages)
+            packagesPanel.setPackages(it.searchPackages())
         }
     }
 

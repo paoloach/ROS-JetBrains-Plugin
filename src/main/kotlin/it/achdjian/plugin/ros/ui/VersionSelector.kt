@@ -1,16 +1,14 @@
 package it.achdjian.plugin.ros.ui
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.ComboBox
-import it.achdjian.plugin.ros.data.RosEnvironments
+import it.achdjian.plugin.ros.data.getRosEnvironment
 import java.awt.Component
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
 class VersionSelector : ComboBox<Any>() {
     companion object {
-        const val TABLE_CELL_EDITOR="JComboBox.isTableCellEditor"
-        const val SHOW_ALL = "ShowAll"
+        const val TABLE_CELL_EDITOR = "JComboBox.isTableCellEditor"
     }
 
     init {
@@ -18,8 +16,8 @@ class VersionSelector : ComboBox<Any>() {
         renderer = VersionSelectorRenderer()
     }
 
-    fun updateList() {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+    private fun updateList() {
+        val state = getRosEnvironment()
         removeAll()
         state.versions.forEach {
             addItem(it.name)
@@ -28,21 +26,22 @@ class VersionSelector : ComboBox<Any>() {
 
 }
 
-class VersionSelectorRenderer :  JLabel() , ListCellRenderer<Any?> {
+class VersionSelectorRenderer : JLabel(), ListCellRenderer<Any?> {
 
     companion object {
-        const val SEPARATOR_STRING="SEPARATOR"
+        const val SEPARATOR_STRING = "SEPARATOR"
     }
+
     private var separator = JSeparator(SwingConstants.HORIZONTAL)
 
     init {
-        isOpaque=true
-        border = EmptyBorder(1,1,1,1)
+        isOpaque = true
+        border = EmptyBorder(1, 1, 1, 1)
     }
 
 
     override fun getListCellRendererComponent(list: JList<out Any?>?, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component {
-        val str= value?.toString()?:""
+        val str = value?.toString() ?: ""
         if (SEPARATOR_STRING == str) {
             return separator
         }
@@ -54,7 +53,7 @@ class VersionSelectorRenderer :  JLabel() , ListCellRenderer<Any?> {
             foreground = list?.foreground
         }
         font = list?.font
-        text=str
+        text = str
         return this
     }
 }

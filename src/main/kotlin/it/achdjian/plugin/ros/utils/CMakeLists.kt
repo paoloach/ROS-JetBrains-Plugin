@@ -1,11 +1,11 @@
 package it.achdjian.plugin.ros.utils
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.data.getRosEnvironment
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -19,12 +19,12 @@ fun getResourceAsString(resourceName: String): String {
 
 }
 
-fun createMainCMakeLists():String {
+fun createMainCMakeLists(): String {
     return getResourceAsString("templates/CMakeLists.txt")
 }
 
 
-fun releaseProfile(version: RosVersion, baseDir: File) : CMakeSettings.Profile {
+fun releaseProfile(version: RosVersion, baseDir: File): CMakeSettings.Profile {
     val buildDir = File(baseDir, "build")
     val options = "-DCATKIN_DEVEL_PREFIX=${baseDir}/devel -DCMAKE_INSTALL_PREFIX=${baseDir}/install"
     return CMakeSettings.Profile(
@@ -41,7 +41,7 @@ fun releaseProfile(version: RosVersion, baseDir: File) : CMakeSettings.Profile {
 fun getRosVersionFromCMakeLists(file: VirtualFile): RosVersion? {
     val cMakeListsTarget = getCMakeListsTarget(file)
     cMakeListsTarget?.let {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        val state = getRosEnvironment()
         return state.getOwnerVersion(it)
     } ?: return null
 }

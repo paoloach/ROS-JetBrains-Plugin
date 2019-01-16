@@ -17,7 +17,7 @@ fun diffEnvironment(rosVersion: Path): Map<String, String> {
 
     val actualEnv = System.getenv()
 
-    val newEnv = getEnvironment(rosVersion.toAbsolutePath().toString()+"/setup.bash")
+    val newEnv = getEnvironment(rosVersion,rosVersion.toAbsolutePath().toString()+"/setup.bash")
     val env  = HashMap(diff(newEnv, actualEnv))
     log.trace("Diff env:")
     env.forEach { key, value -> log.trace("$key=$value") }

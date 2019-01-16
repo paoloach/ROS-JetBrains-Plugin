@@ -8,6 +8,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.NotNullLazyValue
+import it.achdjian.plugin.ros.ui.ICON_LAUNCH
 import javax.swing.Icon
 
 object IDs {
@@ -18,11 +19,6 @@ object IDs {
 }
 
 
-object ICON : NotNullLazyValue<Icon>() {
-    override fun compute() = IconLoader.findIcon("/icons/ros.svg") ?: AllIcons.Icon
-}
-
-
 class LaunchConfigurationFactory(val configurationType: LaunchConfigurationType) : ConfigurationFactory(configurationType) {
     override fun createTemplateConfiguration(project: Project) = LaunchConfiguration(project, configurationType.confFactory, "")
     override fun getSingletonPolicy() = RunConfigurationSingletonPolicy.SINGLE_INSTANCE_ONLY
@@ -30,7 +26,7 @@ class LaunchConfigurationFactory(val configurationType: LaunchConfigurationType)
 
 }
 
-class LaunchConfigurationType : ConfigurationTypeBase(IDs.ID,  IDs.DISPLAY_NAME, IDs.DESCRIPTION, ICON) {
+class LaunchConfigurationType : ConfigurationTypeBase(IDs.ID, IDs.DISPLAY_NAME, IDs.DESCRIPTION, ICON_LAUNCH) {
     var confFactory = LaunchConfigurationFactory(this)
 
 

@@ -10,7 +10,7 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ComboboxSpeedSearch
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import it.achdjian.plugin.ros.data.RosEnvironments
+import it.achdjian.plugin.ros.data.getRosEnvironment
 import it.achdjian.plugin.ros.ui.RosTablePackageModel
 import it.achdjian.plugin.ros.ui.RosVersionDetailDialog
 import it.achdjian.plugin.ros.ui.VersionSelector
@@ -27,6 +27,7 @@ class RosSettings : BaseComponent, Configurable {
     companion object {
         private val LOG = Logger.getInstance(RosSettings::class.java)
     }
+
     private var modified = false
     private val versionSelector = ComboBox<String>()
     override fun isModified() = modified
@@ -106,7 +107,7 @@ class RosSettings : BaseComponent, Configurable {
     }
 
     private fun updateTable() {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        val state = getRosEnvironment()
         LOG.trace("selected version: ${versionSelector.selectedItem}")
         state.versions.forEach { rosVersion ->
             if (rosVersion.name == versionSelector.selectedItem) {
@@ -116,7 +117,7 @@ class RosSettings : BaseComponent, Configurable {
     }
 
     private fun updateVersionSelector() {
-        val state = ApplicationManager.getApplication().getComponent(RosEnvironments::class.java, RosEnvironments())
+        val state = getRosEnvironment()
         versionSelector.removeAllItems()
         versionSelector
         state.versions.forEach {

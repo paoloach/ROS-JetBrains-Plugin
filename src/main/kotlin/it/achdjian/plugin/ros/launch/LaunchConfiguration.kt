@@ -15,7 +15,7 @@ import org.jdom.Element
 
 class LaunchConfiguration(project: Project, configurationFactory: ConfigurationFactory, targetName: String) :
         LocatableConfigurationBase<RunProfileState>(project, configurationFactory, targetName), RunConfigurationWithSuppressedDefaultDebugAction {
-    override fun getConfigurationEditor() = LaunchEditor(project)
+
 
     companion object {
         const val PATH_TAG = "path"
@@ -37,7 +37,7 @@ class LaunchConfiguration(project: Project, configurationFactory: ConfigurationF
     var verbose = false
     var logLevel = "info"
 
-
+    override fun getConfigurationEditor() = LaunchEditor(project)
     override fun getState(executor: Executor, environment: ExecutionEnvironment) = LaunchLauncher(this, environment)
 
     @Throws(InvalidDataException::class)
