@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.IntegerField
 import com.intellij.ui.layout.panel
-import com.jetbrains.cidr.cpp.cmake.model.CMakeTarget
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfigurationSettingsEditor
 import com.jetbrains.cidr.cpp.execution.CMakeBuildConfigurationHelper
@@ -23,6 +22,7 @@ import it.achdjian.plugin.ros.utils.getPackages
 class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHelper) : CMakeAppRunConfigurationSettingsEditor(project, helper) {
     companion object {
         private val LOG = Logger.getInstance(NodeRunEditorCMake::class.java)
+
     }
 
     private val comboPackages = ComboBox<RosPackage>()
@@ -31,7 +31,7 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
     private val packages = getPackages(project)
     private val rosMasterAddr = JBTextField("127.0.0.1")
     private val rosMasterPort = IntegerField("11311", 0, 65535)
-    private val ALL_TARGETS_ITEM = helper.createBuildAllVirtualTarget();
+    private val allTarget = helper.createBuildAllVirtualTarget()
 
 
     init {
@@ -60,8 +60,8 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
         }
         rosMasterAddr.text = configuration.rosMasterAddr
         rosMasterPort.value = configuration.rosMasterPort
-        programParametersPanel.programParametersComponent.getComponent().text = configuration.workingDirectory;
-        programParametersPanel.programParametersComponent.getComponent().text = configuration.programParameters
+        programParametersPanel.programParametersComponent.component.text = configuration.workingDirectory
+        programParametersPanel.programParametersComponent.component.text = configuration.programParameters
         LOG.info("set with configuration: $configuration")
     }
 
@@ -85,10 +85,10 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
 
         }
 
-        configuration.workingDirectory = programParametersPanel.programParametersComponent.getComponent().text
-        configuration.programParameters = programParametersPanel.programParametersComponent.getComponent().text
+        configuration.workingDirectory = programParametersPanel.programParametersComponent.component.text
+        configuration.programParameters = programParametersPanel.programParametersComponent.component.text
 
-        val targetData = BuildTargetData(ALL_TARGETS_ITEM)
+        val targetData = BuildTargetData(allTarget)
         configuration.targetAndConfigurationData = BuildTargetAndConfigurationData(targetData,"Release")
         this.syncBuildAndExecute(cmakeConfiguration, targetData)
         configuration.setExplicitBuildTargetName("all")

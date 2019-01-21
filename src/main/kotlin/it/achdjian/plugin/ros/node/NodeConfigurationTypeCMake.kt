@@ -12,10 +12,10 @@ import it.achdjian.plugin.ros.ui.ICON_NODE
 
 
 object IDs {
-    val ID = "ROS.rosNode"
-    val FACTORY = "ROS.factory.rosNode"
-    val DISPLAY_NAME = "ROS rosNode"
-    val DESCRIPTION = "Run ROS rosNode"
+    const val ID = "ROS.rosNode"
+    const val FACTORY = "ROS.factory.rosNode"
+    const val DISPLAY_NAME = "ROS rosNode"
+    const val DESCRIPTION = "Run ROS rosNode"
 }
 
 
