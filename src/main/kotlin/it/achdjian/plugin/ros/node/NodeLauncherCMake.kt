@@ -1,43 +1,63 @@
 package it.achdjian.plugin.ros.node
 
+import com.intellij.execution.ExecutionException
+import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.*
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.xdebugger.XDebugSession
+import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace
+import com.jetbrains.cidr.cpp.execution.CLionRunConfigurationExtensionsManager
+import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration
+import com.jetbrains.cidr.cpp.execution.CMakeBuildProfileExecutionTarget
 import com.jetbrains.cidr.cpp.execution.CMakeLauncher
-import com.jetbrains.cidr.system.LocalHost
+import com.jetbrains.cidr.cpp.toolchains.CPPEnvironment
+import com.jetbrains.cidr.execution.BuildConfigurationProblems
+import com.jetbrains.cidr.execution.ConfigurationExtensionContext
+import com.jetbrains.cidr.execution.ExecutableData
+import com.jetbrains.cidr.execution.debugger.CidrDebugProcess
+import com.jetbrains.cidr.execution.testing.CidrLauncher
 import it.achdjian.plugin.ros.utils.getPackages
-import it.achdjian.plugin.ros.utils.getVersion
+import org.jetbrains.annotations.NotNull
+import java.io.File
 
-class NodeLauncherCMake(private val nodeConfiguration: NodeConfigurationCMake, val prj: Project, environment: ExecutionEnvironment) : CMakeLauncher(environment, nodeConfiguration) {
+class NodeLauncherCMake(private val nodeConfiguration: NodeConfigurationCMake, val prj: Project, environment: ExecutionEnvironment) :
+        CMakeLauncher(environment, nodeConfiguration) {
     companion object {
         private val LOG = Logger.getInstance(NodeLauncherCMake::class.java)
     }
 
+    private val myExtensionsManager = CLionRunConfigurationExtensionsManager.getInstance();
 
-    override fun createProcess(p0: CommandLineState): ProcessHandler {
-        return nodeConfiguration.pack?.let { packetName ->
-            getPackages(nodeConfiguration.project)
-                    .firstOrNull { it.name == packetName }?.let { rosPackage ->
-                        rosPackage.getNodes().firstOrNull { it.name == nodeConfiguration.node }?.let { rosNode ->
-                            val cmdLine = GeneralCommandLine(rosNode.path.toString())
-                                    .withParameters(nodeConfiguration.programConfParamenters.getProgramParametersList())
-                                    .withEnvironment(getVersion(prj)?.env)
-                                    .withEnvironment(nodeConfiguration.programConfParamenters.envs)
-                                    .withEnvironment("PYTHONUNBUFFERED", "1")
-                            nodeConfiguration.programConfParamenters.workingDirectory?.let {
-                                cmdLine.withWorkDirectory(it)
-                            } ?: cmdLine.withWorkDirectory(rosPackage.path.toFile())
-
-
-                            LOG.debug("Run ${cmdLine.commandLineString} in ${cmdLine.workDirectory}")
-                            return LocalHost.INSTANCE.createProcess(cmdLine, true, true)
-                        } ?: NopProcessHandler()
-                    } ?: NopProcessHandler()
-        } ?: NopProcessHandler()
+    @Throws(ExecutionException::class)
+    override fun createProcess(state: CommandLineState): ProcessHandler {
+        val packages = getPackages(project)
+        val node = packages
+                .filter { it.name==nodeConfiguration.rosPackageName }
+                .flatMap { it.getNodes() }
+                .firstOrNull { it.name == nodeConfiguration.rosNodeName }
+        node?.let {
+            myConfiguration.executableData = ExecutableData(it.path.toString() )
+        }
+        return super.createProcess(state)
     }
+
+    @Throws(ExecutionException::class)
+    override fun createDebugProcess(state: CommandLineState, session: XDebugSession): CidrDebugProcess {
+        val packages = getPackages(project)
+        val node = packages
+                .filter { it.name==nodeConfiguration.rosPackageName }
+                .flatMap { it.getNodes() }
+                .firstOrNull { it.name == nodeConfiguration.rosNodeName }
+        node?.let {
+            myConfiguration.executableData = ExecutableData(it.path.toString() )
+        }
+        return super.createDebugProcess(state,session)
+    }
+
+
 
     override fun getProject() = prj
 }

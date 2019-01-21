@@ -11,7 +11,7 @@ import javax.xml.xpath.XPath
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 
-class RosPackage(val path: Path,private val env: Map<String, String>) {
+class RosPackage(val path: Path, val env: Map<String, String>) {
     companion object {
         val log = Logger.getInstance(RosPackage::class.java)
     }

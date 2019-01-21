@@ -7,20 +7,18 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.IntegerField
 import com.intellij.ui.layout.panel
-import com.intellij.util.ui.GridBag
-import com.intellij.util.ui.JBUI
+import com.jetbrains.cidr.cpp.cmake.model.CMakeTarget
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfigurationSettingsEditor
 import com.jetbrains.cidr.cpp.execution.CMakeBuildConfigurationHelper
+import com.jetbrains.cidr.execution.BuildTargetAndConfigurationData
+import com.jetbrains.cidr.execution.BuildTargetData
 import com.jetbrains.cidr.execution.ExecutableData
 import it.achdjian.plugin.ros.data.RosNode
 import it.achdjian.plugin.ros.data.RosPackage
 import it.achdjian.plugin.ros.ui.RosNodeListCellRenderer
 import it.achdjian.plugin.ros.ui.RosPackageListCellRenderer
 import it.achdjian.plugin.ros.utils.getPackages
-import java.awt.GridBagLayout
-import javax.swing.JComponent
-import javax.swing.JPanel
 
 class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHelper) : CMakeAppRunConfigurationSettingsEditor(project, helper) {
     companion object {
@@ -29,10 +27,11 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
 
     private val comboPackages = ComboBox<RosPackage>()
     private val comboNodes = ComboBox<RosNode>()
-    private val arguments = CommonProgramParametersPanel()
+    private val programParametersPanel = CommonProgramParametersPanel()
     private val packages = getPackages(project)
     private val rosMasterAddr = JBTextField("127.0.0.1")
     private val rosMasterPort = IntegerField("11311", 0, 65535)
+    private val ALL_TARGETS_ITEM = helper.createBuildAllVirtualTarget();
 
 
     init {
@@ -53,84 +52,68 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
     }
 
     override fun resetEditorFrom(cmakeConfiguration: CMakeAppRunConfiguration) {
-      //  super.resetEditorFrom(cmakeConfiguration)
-
         val configuration = cmakeConfiguration as NodeConfigurationCMake
 
-        packages.firstOrNull { it.name == configuration.pack }?.let {
+        packages.firstOrNull { it.name == configuration.rosPackageName }?.let {
             comboPackages.selectedItem = it
-            comboNodes.selectedItem = it.getNodes().firstOrNull { it.name == configuration.node }
+            comboNodes.selectedItem = it.getNodes().firstOrNull { it.name == configuration.rosNodeName }
         }
-        arguments.reset(configuration.programConfParamenters)
         rosMasterAddr.text = configuration.rosMasterAddr
         rosMasterPort.value = configuration.rosMasterPort
-
+        programParametersPanel.programParametersComponent.getComponent().text = configuration.workingDirectory;
+        programParametersPanel.programParametersComponent.getComponent().text = configuration.programParameters
+        LOG.info("set with configuration: $configuration")
     }
 
     override fun applyEditorTo(cmakeConfiguration: CMakeAppRunConfiguration) {
-        //super.applyEditorTo(cmakeConfiguration)
-
         val configuration = cmakeConfiguration as NodeConfigurationCMake
+        configuration.rosMasterAddr = rosMasterAddr.text
+        configuration.rosMasterPort = rosMasterPort.value
 
         comboPackages.selectedItem?.let {
-            configuration.pack = (it as RosPackage).name
+            configuration.rosPackageName = (it as RosPackage).name
+            configuration.envs = it.env
+            rosMasterAddr.text?.let {
+                if (it.isNotEmpty()) {
+                    configuration.envs["ROS_MASTER_URI"] = "http://$it:${rosMasterPort.text}"
+                }
+            }
         }
         comboNodes.selectedItem?.let {
-            configuration.node = (it as RosNode).name
-            cmakeConfiguration.executableData = ExecutableData(it.path.toString())
+            configuration.rosNodeName = (it as RosNode).name
+            configuration.executableData = ExecutableData(it.path.toString())
 
         }
-        arguments.applyTo(configuration.programConfParamenters)
-        configuration.rosMasterAddr=rosMasterAddr.text
-        configuration.rosMasterPort=rosMasterPort.value
 
+        configuration.workingDirectory = programParametersPanel.programParametersComponent.getComponent().text
+        configuration.programParameters = programParametersPanel.programParametersComponent.getComponent().text
 
+        val targetData = BuildTargetData(ALL_TARGETS_ITEM)
+        configuration.targetAndConfigurationData = BuildTargetAndConfigurationData(targetData,"Release")
+        this.syncBuildAndExecute(cmakeConfiguration, targetData)
+        configuration.setExplicitBuildTargetName("all")
     }
 
-    override fun createEditor(): JComponent {
-        val jPanel = JPanel(GridBagLayout())
-        val gridBag = GridBag().setDefaultFill(1).setDefaultAnchor(10).setDefaultWeightX(1, 1.0).setDefaultInsets(0, JBUI.insets(0, 0, 4, 10)).setDefaultInsets(1, JBUI.insetsBottom(4))
-        this.createEditorInner(jPanel, gridBag)
-
-        return jPanel
-    }
-
-
-    override fun createEditorInner(mainPanel: JPanel, gridBag: GridBag){
-        //this.setupTargetCombo(mainPanel, gridBag)
-//        this.setupConfigurationCombo(mainPanel, gridBag)
-        //this.createAdditionalControls(mainPanel, gridBag)
-        //this.setupCommonProgramParametersPanel(mainPanel, gridBag)
-
-
-        for (component in mainPanel.components) {
-            if (component is CommonProgramParametersPanel) {
-                component.setVisible(false)//todo get rid of this hack
-            }
+    override fun createEditor() = panel {
+        row("Package") {
+            comboPackages(grow)
         }
 
-        val panel = panel {
-            row("Package") {
-                comboPackages(grow)
-            }
-
-            row("Node") {
-                comboNodes(grow)
-            }
-            titledRow("ROS MASTER") {
-                row("ROS MASTER address") {
-                    rosMasterAddr(grow)
-                }
-                row("ROS MASTER port") {
-                    rosMasterPort(grow)
-                }
-            }
-            row{
-                arguments(grow)
-            }
-
+        row("Node") {
+            comboNodes(grow)
         }
-        mainPanel.add(panel)
+        titledRow("ROS MASTER") {
+            row("ROS MASTER address") {
+                rosMasterAddr(grow)
+            }
+            row("ROS MASTER port") {
+                rosMasterPort(grow)
+            }
+        }
+        row {
+            programParametersPanel(grow)
+        }
+
     }
 
 }
