@@ -3,8 +3,6 @@ package it.achdjian.plugin.ros.ui
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.components.CheckBox
 import it.achdjian.plugin.ros.data.RosPackage
-import it.achdjian.plugin.ros.data.RosVersion
-import java.util.stream.Collector
 import java.util.stream.Collectors
 import javax.swing.BoxLayout
 import javax.swing.JCheckBox
@@ -24,11 +22,7 @@ class PackagesPanel() : JPanel() {
             val checkBox = CheckBox(it.name)
             checkBox.addActionListener { action ->
                 val source = action.source as JCheckBox
-                if (source.isSelected) {
-                    status[it.name] = true
-                } else {
-                    status[it.name] = true
-                }
+                status[it.name] = source.isSelected
             }
             add(checkBox)
         }

@@ -1,7 +1,7 @@
 package it.achdjian.plugin.ros.ui
 
 import com.intellij.openapi.diagnostic.Logger
-import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.data.RosVersionImpl
 import javax.swing.event.TableModelEvent
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
@@ -12,9 +12,9 @@ class RosTablePackageModel : TableModel {
     }
 
     private var modelListener = HashSet<TableModelListener>()
-    private var rosVersion: RosVersion? = null
+    private var rosVersion: RosVersionImpl? = null
 
-    fun updateVersions(newRosVersion: RosVersion) {
+    fun updateVersions(newRosVersion: RosVersionImpl) {
         LOG.trace("Update version: ${newRosVersion.name}")
         rosVersion = newRosVersion
         newRosVersion.searchPackages()

@@ -21,7 +21,7 @@ data class RosCustomVersion(var versions: MutableMap<String, String>) : Persiste
         defaultVersionToRemove.addAll(state.defaultVersionToRemove)
     }
 
-    fun contains(version: RosVersion) = versions.containsKey(version.name)
-    fun remove(version: RosVersion) = versions.remove(version.name)
+    fun contains(version: RosVersionImpl) = versions.containsKey(version.name)
+    fun remove(version: RosVersionImpl) = versions.remove(version.name)
     fun removeDefault(versionName: String) = defaultVersionToRemove.add(versionName)
 }

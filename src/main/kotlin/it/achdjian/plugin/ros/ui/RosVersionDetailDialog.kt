@@ -7,7 +7,7 @@ import com.intellij.ui.ListSpeedSearch
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import it.achdjian.plugin.ros.data.RosCustomVersion
-import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.data.RosVersionImpl
 import it.achdjian.plugin.ros.data.getRosEnvironment
 import java.awt.Dimension
 import javax.swing.JComponent
@@ -15,7 +15,7 @@ import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 
 class RosVersionDetailDialog : DialogWrapper(null, true) {
-    private var versionList = JBList<RosVersion>()
+    private var versionList = JBList<RosVersionImpl>()
     private var mainPanel: JPanel? = null
 
     init {
@@ -73,7 +73,7 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
                 val customVersion = ApplicationManager.getApplication().getComponent(RosCustomVersion::class.java, RosCustomVersion(HashMap()))
                 customVersion.versions[addDialog.name] = addDialog.path
                 val state = getRosEnvironment()
-                state.add(RosVersion(addDialog.path, addDialog.name))
+                state.add(RosVersionImpl(addDialog.path, addDialog.name))
                 refreshVersionList()
                 isOKActionEnabled = true
             }
@@ -94,7 +94,7 @@ class RosVersionDetailDialog : DialogWrapper(null, true) {
                     }
                     state.remove(it)
                     customVersion.versions[addDialog.name] = addDialog.path
-                    state.add(RosVersion(addDialog.path, addDialog.name))
+                    state.add(RosVersionImpl(addDialog.path, addDialog.name))
                     refreshVersionList()
                     isOKActionEnabled = true
                 }

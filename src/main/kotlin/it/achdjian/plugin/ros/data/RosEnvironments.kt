@@ -12,7 +12,7 @@ class RosEnvironments(customVerison: RosCustomVersion) {
         val LOG = Logger.getInstance(RosEnvironments::class.java.name)
     }
 
-    var versions: MutableList<RosVersion> = ArrayList()
+    var versions: MutableList<RosVersionImpl> = ArrayList()
     private val defaultVersionsName: List<String>
 
     init {
@@ -45,16 +45,16 @@ class RosEnvironments(customVerison: RosCustomVersion) {
 
     fun isDefaultVersion(versionName: String) = defaultVersionsName.contains(versionName)
 
-    fun contains(rosVersion: RosVersion) = versions.contains(rosVersion)
+    fun contains(rosVersion: RosVersionImpl) = versions.contains(rosVersion)
 
-    fun add(rosVersion: RosVersion) = versions.add(rosVersion)
+    fun add(rosVersion: RosVersionImpl) = versions.add(rosVersion)
 
-    fun remove(rosVersion: RosVersion) = versions.removeIf { it.name == rosVersion.name }
+    fun remove(rosVersion: RosVersionImpl) = versions.removeIf { it.name == rosVersion.name }
 
     fun getOwnerVersion(path: Path) = versions.firstOrNull { path.startsWith(it.path) }
 
-    private fun scan(versions: Map<String, String>): List<RosVersion> =
-            versions.map { RosVersion(it.value, it.key) }.toList()
+    private fun scan(versions: Map<String, String>): List<RosVersionImpl> =
+            versions.map { RosVersionImpl(it.value, it.key) }.toList()
 
 
 

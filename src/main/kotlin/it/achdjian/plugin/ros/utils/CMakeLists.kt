@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.cidr.cpp.cmake.CMakeSettings
 import it.achdjian.plugin.ros.data.RosEnvironments
 import it.achdjian.plugin.ros.data.RosVersion
+import it.achdjian.plugin.ros.data.RosVersionImpl
 import it.achdjian.plugin.ros.data.getRosEnvironment
 import java.io.File
 import java.nio.file.Files
@@ -38,7 +39,7 @@ fun releaseProfile(version: RosVersion, baseDir: File): CMakeSettings.Profile {
             "")
 }
 
-fun getRosVersionFromCMakeLists(file: VirtualFile): RosVersion? {
+fun getRosVersionFromCMakeLists(file: VirtualFile): RosVersionImpl? {
     val cMakeListsTarget = getCMakeListsTarget(file)
     cMakeListsTarget?.let {
         val state = getRosEnvironment()
