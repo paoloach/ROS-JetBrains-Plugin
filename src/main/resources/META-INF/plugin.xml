@@ -8,10 +8,13 @@
     <p> It makes available all the CLion programming facilities (code completion and so on ).<p>
     <p>You can to create a new workspace or import an existing one; the plugin will set CLion in order it use rhe right environment variables.<p>
     <p>Set all the ros versions available in your environment and import or create a new ROS workspace<p>
-    <p>Now you can run the .launch files inside the IDE</P>
+    <p>You can run the .launch files inside the IDE</P>
+    <p>You can run/debug all the nodes, also the external ones, inside the IDE</p>
 
     <H2>Future develop</H2>
-    <p> Auto configure lanch files when import a workspace<p>
+    <p> Template for node/service creation </p>
+    <p> Auto configure lanch files when import a workspace</p>
+    <p> Auto configure nodes when import a workspace</p>
     <p> Allow to create a new Node,Service or Message</p>
 
     ]]></description>
