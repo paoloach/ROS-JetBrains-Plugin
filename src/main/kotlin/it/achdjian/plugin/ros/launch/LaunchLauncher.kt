@@ -28,10 +28,10 @@ class LaunchLauncher(private val launchConfiguration: LaunchConfiguration, envir
             if (launchConfiguration.screen) {
                 cmdLine.addParameter("--screen")
             }
-            if (launchConfiguration.log) {
-                cmdLine.addParameter("--log")
-            }
-            cmdLine.addParameter("--master-logger-level=${launchConfiguration.logLevel}")
+//            if (launchConfiguration.log) {
+//                cmdLine.addParameter("--log")
+//            }
+//            cmdLine.addParameter("--master-logger-level=${launchConfiguration.logLevel}")
             cmdLine.addParameter(launchFile.path)
             cmdLine.withWorkDirectory(getBaseDir(environment.project)?.path)
             cmdLine.withEnvironment(environmentVariables)
