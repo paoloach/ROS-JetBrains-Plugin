@@ -21,6 +21,7 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
@@ -40,12 +41,13 @@ intellij {
 }
 
 group 'plugin.achdjian.it'
-version '1.3.1'
+version '1.3.2'
 
 patchPluginXml {
     sinceBuild "182.9999"
-    untilBuild "183.*"
+    untilBuild "191.*"
     changeNotes """
+      <p>&#8226; 1.3.1 &#8594; Fix compatibiliy with 2019.1 version"
       <p>&#8226; 1.3.1 &#8594; Fix bug #1: remove log handle for roslaunch because not support in kinetic version </p>
       <p>&#8226; 1.3.0 &#8594; Run/debug nodes, also external, inside the IDE </p>
       <p>&#8226; 1.2.1 &#8594; fix bug in ROS version environment parsing</p>
