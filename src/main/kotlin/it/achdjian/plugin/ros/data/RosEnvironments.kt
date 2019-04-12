@@ -17,30 +17,34 @@ class RosEnvironments(customVerison: RosCustomVersion) {
 
     init {
 
-        val defaultVersions = Files.list(Paths.get("/opt/ros")).collect(Collectors.toList())?.let { it } ?: ArrayList()
-        defaultVersionsName = defaultVersions.map { it.fileName.toString() }
+        if (Files.exists(Paths.get("/opt/ros"))) {
+            val defaultVersions = Files.list(Paths.get("/opt/ros")).collect(Collectors.toList())?.let { it }
+                    ?: ArrayList()
+            defaultVersionsName = defaultVersions.map { it.fileName.toString() }
 
-        LOG.trace("default version name: ")
-        defaultVersionsName.forEach{LOG.trace(it)}
+            LOG.trace("default version name: ")
+            defaultVersionsName.forEach { LOG.trace(it) }
 
-        val versions = HashMap<String, String>()
-        defaultVersions.associateByTo(versions, { it.fileName.toString() }, { it.toString() })
+            val versions = HashMap<String, String>()
+            defaultVersions.associateByTo(versions, { it.fileName.toString() }, { it.toString() })
 
-        LOG.trace("defaultVersionToRemove")
-        customVerison.defaultVersionToRemove.forEach { LOG.trace(it) }
-        customVerison.defaultVersionToRemove.forEach { versions.remove(it) }
+            LOG.trace("defaultVersionToRemove")
+            customVerison.defaultVersionToRemove.forEach { LOG.trace(it) }
+            customVerison.defaultVersionToRemove.forEach { versions.remove(it) }
 
-        LOG.trace("custom versions")
-        customVerison.versions.forEach { LOG.trace(it.key) }
+            LOG.trace("custom versions")
+            customVerison.versions.forEach { LOG.trace(it.key) }
 
-        customVerison
-                .versions
-                .forEach { (key, value) -> versions[key] = value }
+            customVerison
+                    .versions
+                    .forEach { (key, value) -> versions[key] = value }
 
-        LOG.trace("ROS versions")
-        customVerison.versions.forEach { LOG.trace("${it.key} --> ${it.value}") }
-        this.versions.addAll(scan(versions))
-
+            LOG.trace("ROS versions")
+            customVerison.versions.forEach { LOG.trace("${it.key} --> ${it.value}") }
+            this.versions.addAll(scan(versions))
+        } else {
+            defaultVersionsName = listOf()
+        }
     }
 
     fun isDefaultVersion(versionName: String) = defaultVersionsName.contains(versionName)
