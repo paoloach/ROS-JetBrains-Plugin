@@ -19,9 +19,9 @@ object IDs {
 }
 
 
-class NodeConfigurationFactoryCMake(private val configurationType: NodeConfigurationTypeCMake) : ConfigurationFactory(configurationType) {
+class NodeConfigurationFactory(private val configurationType: NodeConfigurationTypeCMake) : ConfigurationFactory(configurationType) {
     override fun createTemplateConfiguration(project: Project): RunConfiguration {
-        return NodeConfigurationCMake(project, configurationType.confFactory, "ROS")
+        return NodeConfiguration(project, configurationType.confFactory, "ROS")
     }
     override fun getSingletonPolicy() = RunConfigurationSingletonPolicy.SINGLE_INSTANCE_ONLY
     override fun getId() = IDs.FACTORY
@@ -33,10 +33,10 @@ class NodeConfigurationTypeCMake :  CMakeRunConfigurationType(IDs.ID, IDs.FACTOR
     }
 
     override fun createRunConfiguration(project: Project, configurationFactory: ConfigurationFactory): CMakeAppRunConfiguration {
-       return NodeConfigurationCMake(project,confFactory, "ROS")
+       return NodeConfiguration(project,confFactory, "ROS")
     }
 
 
-    var confFactory = NodeConfigurationFactoryCMake(this)
+    var confFactory = NodeConfigurationFactory(this)
 
 }

@@ -17,7 +17,7 @@ import com.jetbrains.cidr.execution.ExecutableData
 import it.achdjian.plugin.ros.utils.getPackages
 import org.jdom.Element
 
-class NodeConfigurationCMake(project: Project, configurationFactory: ConfigurationFactory, targetName: String) :
+class NodeConfiguration(project: Project, configurationFactory: ConfigurationFactory, targetName: String) :
         CMakeAppRunConfiguration(project, configurationFactory, targetName), CidrExecutableDataHolder {
 
 
@@ -39,7 +39,7 @@ class NodeConfigurationCMake(project: Project, configurationFactory: Configurati
     var rosMasterAddr = "localhost"
     var rosMasterPort = 11311
 
-    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = NodeRunEditorCMake(project, CMakeRunConfigurationType.getHelper(project))
+    override fun getConfigurationEditor() = NodeRunEditorCMake(project, CMakeRunConfigurationType.getHelper(project))
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): CidrCommandLineState? {
         return CidrCommandLineState(environment, NodeLauncherCMake(this, project, environment))

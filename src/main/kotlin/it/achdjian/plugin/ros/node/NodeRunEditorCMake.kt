@@ -52,7 +52,7 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
     }
 
     override fun resetEditorFrom(cmakeConfiguration: CMakeAppRunConfiguration) {
-        val configuration = cmakeConfiguration as NodeConfigurationCMake
+        val configuration = cmakeConfiguration as NodeConfiguration
 
         packages.firstOrNull { it.name == configuration.rosPackageName }?.let {
             comboPackages.selectedItem = it
@@ -66,7 +66,7 @@ class NodeRunEditorCMake(val project: Project, helper: CMakeBuildConfigurationHe
     }
 
     override fun applyEditorTo(cmakeConfiguration: CMakeAppRunConfiguration) {
-        val configuration = cmakeConfiguration as NodeConfigurationCMake
+        val configuration = cmakeConfiguration as NodeConfiguration
         configuration.rosMasterAddr = rosMasterAddr.text
         configuration.rosMasterPort = rosMasterPort.value
 
